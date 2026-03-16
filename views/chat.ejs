@@ -369,7 +369,6 @@
                         </div>
                 </div>
               </div>
-              <% } else { %>
                 <div class="message-row">
                   <div class="message-avatar-wrap">
                     <div class="msg-avatar luna-avatar">
@@ -377,8 +376,28 @@
                     </div>
                   </div>
                   <div class="message-content md-content" data-raw-content="<%= msg.content %>">
-                    <div class="msg-text-rendered"><%= msg.content %></div>
-                    <div class="msg-text-raw" style="display:none; font-family:monospace; white-space:pre-wrap; font-size:0.85rem;"><%= msg.content %></div>
+                    <% 
+                       let processedContent = msg.content;
+                       let thinkingContent = "";
+                       const thinkMatch = processedContent.match(/<think>([\s\S]*?)<\/think>/);
+                       if (thinkMatch) {
+                         thinkingContent = thinkMatch[1].trim();
+                         processedContent = processedContent.replace(/<think>[\s\S]*?<\/think>/, "").trim();
+                       }
+                    %>
+
+                    <% if (thinkingContent) { %>
+                      <div class="thinking-block">
+                        <div class="thinking-header" onclick="toggleThinking(this)">
+                          <span class="material-icons-round">chevron_right</span>
+                          Düşünülüyor...
+                        </div>
+                        <div class="thinking-content"><%= thinkingContent %></div>
+                      </div>
+                    <% } %>
+
+                    <div class="msg-text-rendered"><%- locals.renderMarkdown ? renderMarkdown(processedContent) : processedContent %></div>
+                    <div class="msg-text-raw" style="display:none; font-family:monospace; white-space:pre-wrap; font-size:0.85rem;"><%= processedContent %></div>
                       <div class="msg-actions" style="display:flex; gap:8px; margin-top:8px;">
                         <button class="btn-icon" onclick="copyText(this)"
                           data-text="<%= encodeURIComponent(msg.content) %>" title="Metni Kopyala"><span
@@ -391,7 +410,6 @@
                       </div>
                   </div>
                 </div>
-                <% } %>
                   <% }) %>
                     <% } %>
       </div>
@@ -748,7 +766,26 @@
       row.className = 'message-row';
       const content = document.createElement('div');
       content.className = 'message-content md-content';
-      content.innerHTML = marked.parse(text);
+
+      let processedText = text;
+      let thinkingHtml = "";
+      const thinkMatch = text.match(/<think>([\s\S]*?)<\/think>/);
+      
+      if (thinkMatch) {
+          const thinkingText = thinkMatch[1].trim();
+          thinkingHtml = `
+            <div class="thinking-block">
+              <div class="thinking-header" onclick="toggleThinking(this)">
+                <span class="material-icons-round">chevron_right</span>
+                Düşünülüyor...
+              </div>
+              <div class="thinking-content">${thinkingText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+            </div>
+          `;
+          processedText = text.replace(/<think>[\s\S]*?<\/think>/, "").trim();
+      }
+
+      content.innerHTML = thinkingHtml + marked.parse(processedText);
 
       // Syntax highlight
       content.querySelectorAll('pre code').forEach(b => hljs.highlightElement(b));
@@ -796,6 +833,11 @@
     }
 
     function removeEl(id) { const el = document.getElementById(id); if (el) el.remove(); }
+
+    function toggleThinking(header) {
+      const block = header.closest('.thinking-block');
+      block.classList.toggle('open');
+    }
 
     // ─── Code Block Wrapper ───────────────────────────────────────
     function wrapCode(pre) {
