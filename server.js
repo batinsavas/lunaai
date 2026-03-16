@@ -29,6 +29,17 @@ const GROQ_API_KEY = process.env.GROQ_API_KEY || 'gsk_1FBmW0dzJmLUIGUicjR3WGdyb3
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '860144765150-hjr30bmb1tc37lvmi5m97fgp3f8nl967.apps.googleusercontent.com';
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
+// COOP ve COEP ayarlarını buraya ekliyoruz
+app.use((req, res, next) => {
+  // Google Auth popup'ının ana pencereyle konuşabilmesi için:
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+  
+  // Bazı durumlarda Cross-Origin-Embedder-Policy de gerekebilir (isteğe bağlı)
+  // res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+  
+  next();
+});
+
 // ─── DISCORD OAUTH YAPILANDIRMASI ────────────────────────────
 const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID || '1482877661133930687';
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET || 'T5dbV7oMF-BmXmpuP6WORwtYen3Ge7ob';
