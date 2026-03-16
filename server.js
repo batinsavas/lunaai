@@ -29,14 +29,9 @@ const GROQ_API_KEY = process.env.GROQ_API_KEY || 'gsk_1FBmW0dzJmLUIGUicjR3WGdyb3
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '860144765150-hjr30bmb1tc37lvmi5m97fgp3f8nl967.apps.googleusercontent.com';
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
-// COOP ve COEP ayarlarını buraya ekliyoruz
+// Google Auth popup'ı için COOP başlığını "unsafe-none" olarak ayarlıyoruz.
 app.use((req, res, next) => {
-  // Google Auth popup'ının ana pencereyle konuşabilmesi için:
-  res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
-  
-  // Bazı durumlarda Cross-Origin-Embedder-Policy de gerekebilir (isteğe bağlı)
-  // res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
-  
+  res.setHeader("Cross-Origin-Opener-Policy", "unsafe-none");
   next();
 });
 
@@ -244,7 +239,7 @@ app.post('/api/auth/google', async (req, res) => {
 
   } catch (err) {
     console.error("Google Auth Hatası:", err);
-    res.status(401).json({ success: false, error: 'Google ile giriş yapılamadı. Lütfen tekrar deneyin.' });
+    res.status(401).json({ success: false, error: 'Google ile giriş yapılamadı: ' + err.message });
   }
 });
 
@@ -255,6 +250,17 @@ app.post('/api/auth/register', async (req, res) => {
 
     if (!fullName || !email || !password || !confirmPassword || !birthDate) {
       return res.json({ success: false, error: 'Lütfen tüm alanları doldurun.' });
+    }
+
+    // Yaş kontrolü (13 yaş)
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+
+    if (age < 13) {
+      return res.json({ success: false, error: 'Luna AI platformuna kayıt olabilmek için en az 13 yaşında olmalısınız.' });
     }
 
     if (password !== confirmPassword) {
