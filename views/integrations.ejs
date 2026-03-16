@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Entegrasyonlar</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'explore'}) %>
+  <div class="page-content" style="max-width: 900px;">
+    <h1 class="page-title">Entegrasyonlar</h1>
+    <p class="page-subtitle">Luna AI'ı diğer uygulamalarla bağlayın</p>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
+      
+      <!-- Slack (Planlanan) -->
+      <div class="card" style="display:flex; flex-direction:column; justify-content:space-between; opacity:0.6;">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+            <div style="width:48px; height:48px; border-radius:12px; background:#4A154B; display:flex; align-items:center; justify-content:center;">
+              <span class="material-icons-round" style="color:white; font-size:24px;">tag</span>
+            </div>
+            <span class="badge" style="background:var(--surface-hover); color:var(--text-3);">Yakında</span>
+          </div>
+          <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:8px;">Slack Botu</h3>
+          <p style="color:var(--text-2); font-size:0.88rem; line-height:1.5;">Slack Workspace'ine LunaB1'i davet ederek takımla beraber üretkenliği hızlandırın.</p>
+        </div>
+      </div>
+
+      <!-- VS Code (Planlanan) -->
+      <div class="card" style="display:flex; flex-direction:column; justify-content:space-between; opacity:0.6;">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+            <div style="width:48px; height:48px; border-radius:12px; background:#007ACC; display:flex; align-items:center; justify-content:center;">
+              <span class="material-icons-round" style="color:white; font-size:24px;">code</span>
+            </div>
+            <span class="badge" style="background:var(--surface-hover); color:var(--text-3);">Yakında</span>
+          </div>
+          <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:8px;">VS Code Eklentisi</h3>
+          <p style="color:var(--text-2); font-size:0.88rem; line-height:1.5;">Kod tamamlama, inline refactoring ve doğrudan editör içinden Luna'ya sorular sorun.</p>
+        </div>
+      </div>
+
+      <!-- Google Drive (Planlanan) -->
+      <div class="card" style="display:flex; flex-direction:column; justify-content:space-between; opacity:0.6;">
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+            <div style="width:48px; height:48px; border-radius:12px; background:#fff; display:flex; align-items:center; justify-content:center;">
+              <span class="material-icons-round" style="color:#0F9D58; font-size:24px;">add_to_drive</span>
+            </div>
+            <span class="badge" style="background:var(--surface-hover); color:var(--text-3);">Yakında</span>
+          </div>
+          <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:8px;">Google Drive Aktarımı</h3>
+          <p style="color:var(--text-2); font-size:0.88rem; line-height:1.5;">Yüklediğiniz PDF'leri okutun, sohbet çıktılarınızı otomatik döküman halinde Drive'a kaydedin.</p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

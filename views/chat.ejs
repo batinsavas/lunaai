@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Sohbet</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+  <!-- Highlight.js -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <!-- Marked.js -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    /* Theme Styles */
+    body.theme-oled {
+      --bg: #000000;
+      --surface: #0a0a0a;
+      --surface-2: #121212;
+      --border: #1f1f1f;
+    }
+
+    body.theme-glass .chat-sidebar,
+    body.theme-glass .chat-input-box {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Voice Animation */
+    @keyframes pulse-red {
+      0% { box-shadow: 0 0 0 0 rgba(234, 67, 53, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(234, 67, 53, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(234, 67, 53, 0); }
+    }
+    .voice-active {
+      background: #ea4335 !important;
+      color: white !important;
+      animation: pulse-red 1.5s infinite;
+    }
+
+    /* Dropdown Menus */
+    .premium-menu {
+      position: absolute;
+      bottom: 100%;
+      right: 0;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 8px;
+      margin-bottom: 8px;
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 160px;
+      box-shadow: var(--shadow-lg);
+      z-index: 100;
+    }
+    .premium-menu.active { display: flex; }
+    .premium-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: var(--transition);
+    }
+    .premium-menu-item:hover { background: var(--surface-hover); }
+
+    /* Focus Mode */
+    body.focus-mode .chat-sidebar,
+    body.focus-mode .chat-topbar,
+    body.focus-mode .sidebar-section-label,
+    body.focus-mode .sidebar-history,
+    body.focus-mode .sidebar-footer {
+      display: none !important;
+    }
+    body.focus-mode .chat-main {
+      width: 100vw;
+      margin-left: 0;
+    }
+
+    /* Slider Styles */
+    .premium-slider-wrap {
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      color: var(--text-2);
+    }
+    .premium-slider-wrap label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .premium-slider {
+      width: 100%;
+      height: 4px;
+      -webkit-appearance: none;
+      background: var(--border);
+      border-radius: 2px;
+      outline: none;
+    }
+    .premium-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      background: #1a73e8;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .chat-messages.active {
+      display: flex;
+    }
+
+    /* Health Monitor */
+    .health-monitor {
+      position: fixed;
+      bottom: 80px;
+      left: 20px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 10px;
+      border-radius: var(--radius-md);
+      font-size: 0.75rem;
+      color: var(--text-3);
+      display: none;
+      z-index: 1000;
+    }
+    .health-monitor.active { display: block; }
+
+    .message-row {
+      animation: msgIn 0.2s ease-out;
+    }
+
+    @keyframes msgIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Search Toggle Style */
+    .btn-search-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text-2);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-top: 4px;
+      user-select: none;
+    }
+
+    .btn-search-toggle:hover {
+      background: var(--surface-hover);
+      border-color: var(--text-3);
+    }
+
+    .btn-search-toggle.active {
+      background: #1a73e8 !important;
+      color: white !important;
+      border-color: #1a73e8 !important;
+      box-shadow: 0 2px 8px rgba(26, 115, 232, 0.3);
+    }
+
+    .btn-search-toggle .material-icons-round {
+      font-size: 16px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="toast-container" id="toastContainer"></div>
+  <div class="health-monitor" id="healthMonitor">
+    <div>Gecikme: <span id="healthLatency">0ms</span></div>
+    <div>Bellek: <span id="healthMem">---</span></div>
+    <div>Oturum: <span id="healthSess">Yeni</span></div>
+  </div>
+
+  <div class="chat-layout">
+
+    <!-- ═══ LEFT SIDEBAR ════════════════════════════════════════ -->
+    <aside class="chat-sidebar">
+      <div class="sidebar-header">
+        <!-- Logo -->
+        <a href="/" class="sidebar-logo">
+          <img src="https://i.imgur.com/X4GG8BF.png" alt="Luna" onerror="this.style.display='none'">
+          <span class="sidebar-logo-text">Luna AI</span>
+        </a>
+      </div>
+
+      <!-- New Chat -->
+      <div style="padding: 4px 8px 8px;">
+        <button class="sidebar-newchat" onclick="newChat()">
+          <span class="material-icons-round" style="font-size:18px;">edit</span>
+          Yeni Sohbet
+        </button>
+      </div>
+
+      <!-- History -->
+      <div class="sidebar-section-label">Sohbetler</div>
+      <div class="sidebar-history" id="historyList">
+        <% if (locals.allConversations) { %>
+          <% [...allConversations].reverse().forEach(c=> {
+            const firstMsg = c.messages.find(m => m.role === 'user');
+            const title = firstMsg ? firstMsg.content.substring(0, 30) : 'Yeni Sohbet';
+            %>
+            <a href="/chat?id=<%= c.id %>"
+              class="history-item <%= locals.conversation && conversation.id === c.id ? 'active' : '' %>"
+              style="display:flex; align-items:center; gap:8px; text-decoration:none;">
+              <span class="material-icons-round" style="font-size:14px; flex-shrink:0; opacity:0.5;">chat</span>
+              <%= title %>
+                <%= title.length>= 30 ? '...' : '' %>
+            </a>
+            <% }) %>
+              <% } %>
+      </div>
+
+      <!-- Footer Nav -->
+      <div class="sidebar-footer">
+        <ul class="sidebar-nav">
+          <li><a href="/settings" class="sidebar-nav-link">
+              <span class="material-icons-round">settings</span> Ayarlar ve yardım
+            </a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- ═══ MAIN CHAT AREA ═══════════════════════════════════════ -->
+    <main class="chat-main">
+
+      <!-- Top Bar (only profile avatar) -->
+      <div class="chat-topbar">
+        <!-- Canvas toggle -->
+        <button class="btn-icon" onclick="toggleCanvas()" title="HTML Önizleme" id="canvasToggleBtn"
+          style="display:none;">
+          <span class="material-icons-round">code</span>
+        </button>
+        <!-- Profile Avatar -->
+        <div style="position:relative;">
+          <div class="avatar avatar-initials" id="profileAvatar" onclick="toggleProfileMenu()" title="Profil"
+            style="cursor:pointer;">
+            <% if (user && user.profilePhoto) { %>
+              <img src="<%= user.profilePhoto %>" alt="Profil"
+                onerror="this.parentElement.innerHTML='<%= (user.firstName[0] + user.lastName[0]).toUpperCase() %>'">
+              <% } else if (user) { %>
+                <%= (user.firstName[0] + user.lastName[0]).toUpperCase() %>
+                  <% } else { %>
+                    ?
+                    <% } %>
+          </div>
+          <!-- Profile Dropdown -->
+          <div id="profileMenu"
+            style="display:none; position:absolute; right:0; top:44px; background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-lg); padding:8px; min-width:200px; z-index:200; box-shadow:var(--shadow-lg);">
+            <div style="padding:12px 12px 8px; border-bottom:1px solid var(--border); margin-bottom:8px;">
+              <p style="font-weight:600; font-size:0.9rem;">
+                <%= user ? user.firstName + ' ' + user.lastName : '' %>
+              </p>
+              <p style="font-size:0.8rem; color:var(--text-2);">
+                <%= user ? user.email : '' %>
+              </p>
+            </div>
+            <a href="/profile"
+              style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:var(--radius-md); text-decoration:none; color:var(--text-2); font-size:0.88rem; transition:var(--transition);"
+              onmouseover="this.style.background='var(--surface-hover)'" onmouseout="this.style.background='none'">
+              <span class="material-icons-round" style="font-size:18px;">person</span> Profil
+            </a>
+            <a href="/settings"
+              style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:var(--radius-md); text-decoration:none; color:var(--text-2); font-size:0.88rem; transition:var(--transition);"
+              onmouseover="this.style.background='var(--surface-hover)'" onmouseout="this.style.background='none'">
+              <span class="material-icons-round" style="font-size:18px;">settings</span> Ayarlar
+            </a>
+            <div style="margin:8px 0; border-top:1px solid var(--border);"></div>
+            <form action="/api/auth/logout" method="POST">
+              <button type="submit"
+                style="display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:var(--radius-md); background:none; border:none; cursor:pointer; color:var(--danger); font-size:0.88rem; width:100%; font-family:inherit; transition:var(--transition);"
+                onmouseover="this.style.background='rgba(242,139,130,0.08)'" onmouseout="this.style.background='none'">
+                <span class="material-icons-round" style="font-size:18px;">logout</span> Çıkış Yap
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Welcome Screen (shown when no messages) -->
+      <div class="chat-welcome" id="welcomeScreen"
+        style="<%= locals.conversation && conversation.messages.length > 0 ? 'display:none;' : '' %>">
+        <div
+          style="font-size:0.9rem; font-weight:500; color:var(--text-2); margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+          <img src="https://i.imgur.com/X4GG8BF.png" alt="" style="width:20px; height:20px; border-radius:5px;">
+          Luna AI
+        </div>
+        <h1 class="welcome-greeting">Merhaba, <%= user ? user.firstName : 'Kullanıcı' %>
+        </h1>
+        <p class="welcome-subtitle">
+          Sohbet, kod yazma, görsel analiz ve daha pek çok konuda<br>yardımcı olmaya hazırım.
+        </p>
+
+        <!-- Suggestion Chips -->
+        <div class="welcome-chips">
+          <button class="chip" onclick="setInput('Bana Python ile basit bir web scraper yaz')">
+            <span class="material-icons-round">code</span>
+            Kod Yaz
+          </button>
+          <button class="chip" onclick="setInput('Bugün nasıl daha verimli çalışabilirim?')">
+            <span class="material-icons-round">tips_and_updates</span>
+            Verimlilik
+          </button>
+          <button class="chip" onclick="document.getElementById('fileInput').click()">
+            <span class="material-icons-round">image</span>
+            Görsel Analiz
+          </button>
+          <button class="chip" onclick="setInput('Türkiye\\'nin en güzel şehirleri hangileri?')">
+            <span class="material-icons-round">travel_explore</span>
+            Keşfet
+          </button>
+          <button class="chip" onclick="setInput('Bana bir HTML landing page tasarla')">
+            <span class="material-icons-round">palette</span>
+            Tasarım
+          </button>
+        </div>
+      </div>
+
+      <!-- Messages Area -->
+      <div class="chat-messages <%= locals.conversation && conversation.messages.length > 0 ? 'active' : '' %>"
+        id="chatMessages">
+        <% if (locals.conversation && conversation.messages) { %>
+          <% conversation.messages.forEach(msg=> { %>
+            <% if (msg.role==='user' ) { %>
+              <div class="message-row user">
+                <div class="message-avatar-wrap">
+                  <div class="msg-avatar">
+                    <% if (user && user.profilePhoto) { %>
+                      <img src="<%= user.profilePhoto %>" alt="">
+                      <% } else { %>
+                        <div class="avatar avatar-initials" style="width:32px;height:32px;font-size:0.78rem;">
+                          <%= user ? (user.firstName[0]+user.lastName[0]).toUpperCase() : '?' %>
+                        </div>
+                        <% } %>
+                  </div>
+                </div>
+                <div class="message-content">
+                  <% if (msg.type==='image' ) { %>
+                    <div style="font-style:italic; font-size:0.85rem; color:var(--text-2); margin-bottom:4px;">[Görsel]
+                    </div>
+                    <% } else if (msg.type==='file' ) { %>
+                      <div
+                        style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--surface-2);border-radius:var(--radius-md);font-size:0.85rem;color:var(--text-2);margin-bottom:6px;">
+                        <span class="material-icons-round" style="font-size:16px;">description</span>Dosya Yüklendi
+                      </div>
+                      <% } %>
+                        <div>
+                          <%= msg.content %>
+                        </div>
+                </div>
+              </div>
+              <% } else { %>
+                <div class="message-row">
+                  <div class="message-avatar-wrap">
+                    <div class="msg-avatar luna-avatar">
+                      <img src="https://i.imgur.com/X4GG8BF.png" alt="Luna" onerror="this.style.display='none'">
+                    </div>
+                  </div>
+                  <div class="message-content md-content" data-raw-content="<%= msg.content %>">
+                    <div class="msg-text-rendered"><%= msg.content %></div>
+                    <div class="msg-text-raw" style="display:none; font-family:monospace; white-space:pre-wrap; font-size:0.85rem;"><%= msg.content %></div>
+                      <div class="msg-actions" style="display:flex; gap:8px; margin-top:8px;">
+                        <button class="btn-icon" onclick="copyText(this)"
+                          data-text="<%= encodeURIComponent(msg.content) %>" title="Metni Kopyala"><span
+                            class="material-icons-round"
+                            style="font-size:16px; color:var(--text-3);">content_copy</span></button>
+                        <button class="btn-icon" onclick="speakText(this)"
+                          data-text="<%= encodeURIComponent(msg.content.replace(/[*#_`]/g, '')) %>"
+                          title="Seslendir"><span class="material-icons-round"
+                            style="font-size:16px; color:var(--text-3);">volume_up</span></button>
+                      </div>
+                  </div>
+                </div>
+                <% } %>
+                  <% }) %>
+                    <% } %>
+      </div>
+
+      <!-- File Preview Strip -->
+      <div class="preview-strip" id="previewStrip"></div>
+
+      <!-- Input Area -->
+      <div class="chat-input-outer">
+        <div class="chat-input-box">
+          <div class="chat-input-main">
+            <label class="btn-icon" style="cursor:pointer;" title="Dosya yükle">
+              <span class="material-icons-round">attach_file</span>
+              <input type="file" id="fileInput" accept="image/*,.txt,.js,.py,.ts,.html,.css,.json,.md"
+                style="display:none;" onchange="handleFileSelect(this)">
+            </label>
+            <textarea class="chat-textarea" id="chatInput" placeholder="Luna'ya bir şey sor..." rows="1"></textarea>
+            <div class="input-actions" style="display: flex; gap: 4px;">
+              <button class="btn-icon" id="voiceBtn" onclick="toggleVoice()" title="Sesle Yaz">
+                <span class="material-icons-round">mic</span>
+              </button>
+              <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Gönder" disabled>
+                <span class="material-icons-round" style="font-size:18px;">send</span>
+              </button>
+            </div>
+          </div>
+          <!-- Search Mode Toggle Row -->
+          <div style="padding: 0 12px 10px; display: flex; align-items: center; gap: 8px; justify-content: space-between;">
+            <div style="display: flex; gap: 8px;">
+              <button id="searchToggle" class="btn-search-toggle" onclick="toggleSearchMode()" title="Araştırma Modunu Aç/Kapat">
+                <span class="material-icons-round">travel_explore</span>
+                Ara
+              </button>
+              <button class="btn-search-toggle" onclick="togglePremiumMenu()" title="Premium Araçlar">
+                <span class="material-icons-round">auto_awesome</span>
+                Araçlar
+              </button>
+            </div>
+
+            <!-- Premium Dropdown -->
+            <div id="premiumMenu" class="premium-menu">
+              <div class="premium-menu-item" onclick="summarizeChat()">
+                <span class="material-icons-round">summarize</span> Sohbeti Özetle
+              </div>
+              <div class="premium-menu-item" onclick="togglePersonaMenu()">
+                <span class="material-icons-round">psychology</span> Persona Değiştir
+              </div>
+              <div class="premium-menu-item" onclick="toggleTemplateMenu()">
+                <span class="material-icons-round">auto_fix_high</span> Hazır Şablonlar
+              </div>
+              <div style="margin: 4px 0; border-top: 1px solid var(--border);"></div>
+              <div class="premium-menu-item" onclick="toggleFocusMode()">
+                <span class="material-icons-round">center_focus_strong</span> Odak Modu
+              </div>
+              <div style="margin: 4px 0; border-top: 1px solid var(--border);"></div>
+              <div class="premium-slider-wrap">
+                <label><span>Yaratıcılık</span> <span id="valCreativity">1.0</span></label>
+                <input type="range" class="premium-slider" min="0" max="2" step="0.1" value="1.0" oninput="updateSlider('Creativity', this.value)">
+              </div>
+              <div class="premium-slider-wrap">
+                <label><span>Yazma Hızı</span> <span id="valSpeed">Standart</span></label>
+                <input type="range" class="premium-slider" min="1" max="5" step="1" value="3" oninput="updateSlider('Speed', this.value)">
+              </div>
+              <div style="margin: 4px 0; border-top: 1px solid var(--border);"></div>
+              <div class="premium-menu-item" onclick="toggleMarkdownPreview()">
+                <span class="material-icons-round">visibility</span> Markdown Önizleme Değiştir
+              </div>
+              <div class="premium-menu-item" onclick="toggleHealthMonitor()">
+                <span class="material-icons-round">monitor_heart</span> Sistem Sağlığı
+              </div>
+              <div style="margin: 4px 0; border-top: 1px solid var(--border);"></div>
+              <div class="premium-menu-item" onclick="exportChat('md')">
+              <div class="premium-menu-item" onclick="toggleTheme('oled')">
+                <span class="material-icons-round">dark_mode</span> OLED Siyah Tema
+              </div>
+              <div class="premium-menu-item" onclick="toggleTheme('glass')">
+                <span class="material-icons-round">blur_on</span> Glassmorphism Tema
+              </div>
+              <div class="premium-menu-item" onclick="clearAllData()" style="color: var(--danger);">
+                <span class="material-icons-round">delete_forever</span> Tüm Verileri Sıfırla
+              </div>
+            </div>
+
+            <!-- Submenus -->
+            <div id="personaMenu" class="premium-menu" style="right: 170px;">
+              <div class="premium-menu-item" onclick="setPersona('Standart')">Standart Luna</div>
+              <div class="premium-menu-item" onclick="setPersona('Profesyonel')">Profesyonel / Ciddi</div>
+              <div class="premium-menu-item" onclick="setPersona('Yazılımcı')">Yazılım Uzmanı</div>
+              <div class="premium-menu-item" onclick="setPersona('Yaratıcı')">Yaratıcı / Hikayeci</div>
+            </div>
+
+            <div id="templateMenu" class="premium-menu" style="right: 170px;">
+              <div class="premium-menu-item" onclick="setInput('Şu kodu incele ve hataları bul: \n\n')">Kod İnceleme</div>
+              <div class="premium-menu-item" onclick="setInput('Bunu 5 yaşındaki birine anlatır gibi açıkla: ')">5 Yaşındaki Birine Anlat</div>
+              <div class="premium-menu-item" onclick="setInput('Şu metni düzelt ve daha profesyonel hale getir: ')">Metin İyileştirme</div>
+              <div class="premium-menu-item" onclick="setInput('Bana bu konuda bir yol haritası (roadmap) çıkar: ')">Yol Haritası Çıkar</div>
+            </div>
+          </div>
+          </div>
+        </div>
+        <div class="input-footer">Luna AI hata yapabilir. Önemli bilgileri doğrulayın.</div>
+      </div>
+
+    </main>
+
+  <!-- Canvas Panel -->
+  <div class="canvas-panel" id="canvasPanel">
+    <div class="canvas-header">
+      <span style="font-size:0.88rem; font-weight:600; display:flex; align-items:center; gap:6px;">
+        <span class="material-icons-round" style="font-size:16px;">code</span>
+        Canlı Önizleme
+      </span>
+      <div style="display:flex; gap:4px;">
+        <button class="btn-icon" onclick="refreshCanvas()" title="Yenile"><span class="material-icons-round"
+            style="font-size:16px;">refresh</span></button>
+        <button class="btn-icon" onclick="toggleCanvas()" title="Kapat"><span class="material-icons-round"
+            style="font-size:16px;">close</span></button>
+      </div>
+    </div>
+    <iframe id="canvasIframe" class="canvas-iframe" sandbox="allow-scripts allow-same-origin"></iframe>
+  </div>
+
+  </div>
+
+  <!-- Hidden data -->
+  <script>
+    const SESSION_ID = '<%= sessionId %>';
+    const USER_FIRST = '<%= user ? user.firstName : "Kullanıcı" %>';
+    const USER_PHOTO = '<%= user && user.profilePhoto ? user.profilePhoto : "" %>';
+    const USER_INITIALS = '<%= user ? (user.firstName[0] + user.lastName[0]).toUpperCase() : "?" %>';
+  </script>
+
+  <!-- Highlight.js + Marked config -->
+  <script>
+    marked.setOptions({ breaks: true, gfm: true });
+  </script>
+
+  <script>
+    // ─── State ───────────────────────────────────────────────────
+    // Load history from localStorage if available, otherwise fallback to server data
+    const SERVER_HISTORY = <%- locals.conversation ? JSON.stringify(conversation.messages.map(m => ({ role: m.role, parts: [{ text: m.content }] }))) : '[]' %>;
+    let history = JSON.parse(localStorage.getItem('luna_history_' + SESSION_ID)) || SERVER_HISTORY;
+
+    // Sync back to localStorage immediately if we used server data
+    if (!localStorage.getItem('luna_history_' + SESSION_ID) && SERVER_HISTORY.length > 0) {
+      localStorage.setItem('luna_history_' + SESSION_ID, JSON.stringify(SERVER_HISTORY));
+    }
+    let pendingFile = null;
+    let isLoading = false;
+    let isSearchModeActive = false;
+
+    function toggleSearchMode() {
+      isSearchModeActive = !isSearchModeActive;
+      const btn = document.getElementById('searchToggle');
+      if (isSearchModeActive) {
+        btn.classList.add('active');
+        showToast('Araştırma modu aktif');
+      } else {
+        btn.classList.remove('active');
+        showToast('Standart mod aktif');
+      }
+    }
+
+    // ─── DOM Refs ─────────────────────────────────────────────────
+    const chatInput = document.getElementById('chatInput');
+    const chatMessages = document.getElementById('chatMessages');
+    const welcomeScreen = document.getElementById('welcomeScreen');
+    const previewStrip = document.getElementById('previewStrip');
+    const sendBtn = document.getElementById('sendBtn');
+    const canvasPanel = document.getElementById('canvasPanel');
+    const canvasIframe = document.getElementById('canvasIframe');
+    const canvasToggleBtn = document.getElementById('canvasToggleBtn');
+
+    // ─── Auto-resize textarea + enable send ──────────────────────
+    chatInput.addEventListener('input', () => {
+      chatInput.style.height = 'auto';
+      chatInput.style.height = Math.min(chatInput.scrollHeight, 160) + 'px';
+      sendBtn.disabled = (!chatInput.value.trim() && !pendingFile) || isLoading;
+    });
+
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    });
+
+    // ─── Profile Menu ──────────────────────────────────────────
+    function toggleProfileMenu() {
+      const m = document.getElementById('profileMenu');
+      m.style.display = m.style.display === 'none' ? 'block' : 'none';
+    }
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#profileAvatar') && !e.target.closest('#profileMenu')) {
+        const m = document.getElementById('profileMenu');
+        if (m) m.style.display = 'none';
+      }
+    });
+
+    // ─── File Handling ───────────────────────────────────────────
+    function handleFileSelect(input) {
+      const file = input.files[0]; if (!file) return;
+      pendingFile = file;
+      previewStrip.innerHTML = '';
+      previewStrip.classList.add('visible');
+
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          previewStrip.innerHTML = `
+        <div class="preview-img-thumb">
+          <img src="${e.target.result}" alt="">
+          <button class="preview-remove" onclick="clearFile()">✕</button>
+        </div>`;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        previewStrip.innerHTML = `
+      <div style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface-2); border-radius:var(--radius-md); font-size:0.85rem; color:var(--text-2); border:1px solid var(--border);">
+        <span class="material-icons-round" style="font-size:16px;">description</span>
+        ${file.name}
+        <button onclick="clearFile()" style="background:none; border:none; cursor:pointer; color:var(--text-3); margin-left:4px; display:flex;">
+          <span class="material-icons-round" style="font-size:14px;">close</span>
+        </button>
+      </div>`;
+      }
+      sendBtn.disabled = false;
+    }
+
+    function clearFile() {
+      pendingFile = null;
+      previewStrip.innerHTML = '';
+      previewStrip.classList.remove('visible');
+      document.getElementById('fileInput').value = '';
+      sendBtn.disabled = !chatInput.value.trim();
+    }
+
+    function setInput(text) {
+      chatInput.value = text;
+      chatInput.dispatchEvent(new Event('input'));
+      chatInput.focus();
+    }
+
+    // ─── Send Message ─────────────────────────────────────────────
+    async function sendMessage() {
+      const msg = chatInput.value.trim();
+      if ((!msg && !pendingFile) || isLoading) return;
+
+      isLoading = true;
+      sendBtn.disabled = true;
+
+      // Switch to messages view
+      welcomeScreen.style.display = 'none';
+      chatMessages.classList.add('active');
+
+      // Add user message
+      addUserMessage(msg, pendingFile);
+
+      // Clear input
+      chatInput.value = '';
+      chatInput.style.height = 'auto';
+      clearFile();
+
+      // Add to history
+      history.push({ role: 'user', parts: [{ text: msg || '[Dosya]' }] });
+      localStorage.setItem('luna_history_' + SESSION_ID, JSON.stringify(history));
+
+      // Show thinking
+      const thinkId = addThinking();
+
+      // Prepare request
+      const fd = new FormData();
+      fd.append('message', msg);
+      fd.append('sessionId', SESSION_ID);
+      fd.append('history', JSON.stringify(history));
+      fd.append('isSearchMode', isSearchModeActive);
+      if (pendingFile) fd.append('file', pendingFile);
+
+      try {
+        await sleep(1500); // insansı gecikme
+        const res = await fetch('/api/chat', { method: 'POST', body: fd });
+        const data = await res.json();
+        removeEl(thinkId);
+
+        if (data.success) {
+          history.push({ role: 'model', parts: [{ text: data.response }] });
+          localStorage.setItem('luna_history_' + SESSION_ID, JSON.stringify(history));
+          addLunaMessage(data.response);
+
+          // Refresh page URL if this is the first message so it loads ID properly
+          if (history.length <= 2) {
+            window.history.replaceState(null, '', '/chat?id=' + SESSION_ID);
+            // Refresh sidebar silently by adding the active element
+            const list = document.getElementById('historyList');
+            const firstMsg = msg || 'Dosya analizi';
+            const a = document.createElement('a');
+            a.href = '/chat?id=' + SESSION_ID;
+            a.className = 'history-item active';
+            a.style.display = 'flex'; a.style.alignItems = 'center'; a.style.gap = '8px'; a.style.textDecoration = 'none';
+            a.innerHTML = `<span class="material-icons-round" style="font-size:14px; flex-shrink:0; opacity:0.5;">chat</span> ${firstMsg.substring(0, 30)}${firstMsg.length >= 30 ? '...' : ''}`;
+            list.prepend(a);
+          }
+
+          // Canvas check
+          if (/<html|<!DOCTYPE|<body/i.test(data.response)) {
+            const match = data.response.match(/```html([\s\S]*?)```/) || data.response.match(/```([\s\S]*?)```/);
+            if (match) {
+              renderCanvas(match[1]);
+              canvasToggleBtn.style.display = 'flex';
+            }
+          }
+        } else {
+          let errStr = data.error || 'Üzgünüm, bir sorun yaşadım. 🙏';
+          if (data.errorCode) {
+            errStr += `\n<br><span style="color:var(--danger); font-size:0.85rem;">[Hata Kodu: ${data.errorCode}]</span>`;
+          }
+          addLunaMessage(errStr);
+        }
+      } catch {
+        removeEl(thinkId);
+        addLunaMessage('Sunucuya bağlanırken sorun yaşadım. Lütfen tekrar deneyin.');
+      } finally {
+        isLoading = false;
+        sendBtn.disabled = false;
+        chatInput.focus();
+      }
+    }
+
+    // ─── Message Rendering ────────────────────────────────────────
+    function addUserMessage(text, file) {
+      const row = document.createElement('div');
+      row.className = 'message-row user';
+      let inner = '';
+
+      if (file && file.type.startsWith('image/')) {
+        const url = URL.createObjectURL(file);
+        inner += `<img src="${url}" alt="" class="message-img">`;
+      } else if (file) {
+        inner += `<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--surface-2);border-radius:var(--radius-md);font-size:0.85rem;color:var(--text-2);margin-bottom:6px;"><span class="material-icons-round" style="font-size:16px;">description</span>${file.name}</div>`;
+      }
+      if (text) inner += `<div>${escHtml(text)}</div>`;
+
+      row.innerHTML = `
+    <div class="message-avatar-wrap">
+      <div class="msg-avatar">
+        ${USER_PHOTO ? `<img src="${USER_PHOTO}" alt="">` : `<div class="avatar avatar-initials" style="width:32px;height:32px;font-size:0.78rem;">${USER_INITIALS}</div>`}
+      </div>
+    </div>
+    <div class="message-content">${inner}</div>
+  `;
+      chatMessages.appendChild(row);
+      scrollDown();
+    }
+
+    function addLunaMessage(text) {
+      const row = document.createElement('div');
+      row.className = 'message-row';
+      const content = document.createElement('div');
+      content.className = 'message-content md-content';
+      content.innerHTML = marked.parse(text);
+
+      // Syntax highlight
+      content.querySelectorAll('pre code').forEach(b => hljs.highlightElement(b));
+      // Wrap code blocks
+      content.querySelectorAll('pre').forEach(pre => wrapCode(pre));
+
+      row.innerHTML = `
+    <div class="message-avatar-wrap">
+      <div class="msg-avatar luna-avatar">
+        <img src="https://i.imgur.com/X4GG8BF.png" alt="Luna" onerror="this.style.display='none'">
+      </div>
+    </div>`;
+      row.appendChild(content);
+
+      // Add Action Buttons
+      const actions = document.createElement('div');
+      actions.className = 'msg-actions';
+      actions.style = 'display:flex; gap:8px; margin-top:8px;';
+      actions.innerHTML = `
+    <button class="btn-icon" onclick="copyText(this)" data-text="${encodeURIComponent(text)}" title="Metni Kopyala"><span class="material-icons-round" style="font-size:16px; color:var(--text-3);">content_copy</span></button>
+    <button class="btn-icon" onclick="speakText(this)" data-text="${encodeURIComponent(text.replace(/[*#_`]/g, ''))}" title="Seslendir"><span class="material-icons-round" style="font-size:16px; color:var(--text-3);">volume_up</span></button>
+  `;
+      content.appendChild(actions);
+
+      chatMessages.appendChild(row);
+      scrollDown();
+    }
+
+    function addThinking() {
+      const id = 'th-' + Date.now();
+      const row = document.createElement('div');
+      row.className = 'message-row'; row.id = id;
+      row.innerHTML = `
+    <div class="message-avatar-wrap">
+      <div class="msg-avatar luna-avatar">
+        <img src="https://i.imgur.com/X4GG8BF.png" alt="Luna" onerror="this.style.display='none'">
+      </div>
+    </div>
+    <div class="message-content">
+      <div class="thinking-wrap"><span></span><span></span><span></span></div>
+    </div>`;
+      chatMessages.appendChild(row);
+      scrollDown();
+      return id;
+    }
+
+    function removeEl(id) { const el = document.getElementById(id); if (el) el.remove(); }
+
+    // ─── Code Block Wrapper ───────────────────────────────────────
+    function wrapCode(pre) {
+      const code = pre.querySelector('code');
+      const lang = (code?.className?.match(/language-(\w+)/) || [])[1] || 'code';
+      const wrap = document.createElement('div');
+      wrap.className = 'code-wrap';
+      const head = document.createElement('div');
+      head.className = 'code-head';
+      head.innerHTML = `
+    <span class="code-lang">${lang}</span>
+    <button class="copy-btn" onclick="copyCode(this)">
+      <span class="material-icons-round" style="font-size:14px;">content_copy</span> Kopyala
+    </button>`;
+      pre.parentNode.insertBefore(wrap, pre);
+      wrap.appendChild(head);
+      wrap.appendChild(pre);
+    }
+
+    function copyCode(btn) {
+      const code = btn.closest('.code-wrap').querySelector('code');
+      navigator.clipboard.writeText(code.textContent).then(() => {
+        btn.innerHTML = `<span class="material-icons-round" style="font-size:14px;">check</span> Kopyalandı`;
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerHTML = `<span class="material-icons-round" style="font-size:14px;">content_copy</span> Kopyala`;
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    // ─── Canvas ───────────────────────────────────────────────────
+    function toggleCanvas() {
+      canvasPanel.classList.toggle('open');
+    }
+
+    function renderCanvas(html) {
+      canvasPanel.classList.add('open');
+      canvasToggleBtn.style.display = 'flex';
+      const doc = canvasIframe.contentDocument || canvasIframe.contentWindow.document;
+      doc.open(); doc.write(html); doc.close();
+      showToast('HTML Canvas güncellendi');
+    }
+
+    function refreshCanvas() {
+      const doc = canvasIframe.contentDocument || canvasIframe.contentWindow.document;
+      const c = doc.documentElement.outerHTML;
+      doc.open(); doc.write(c); doc.close();
+    }
+
+    // ─── Utils ────────────────────────────────────────────────────
+    function scrollDown() { chatMessages.scrollTop = chatMessages.scrollHeight; }
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+    function escHtml(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>'); }
+
+    function newChat() {
+      window.location.href = '/chat';
+    }
+
+
+
+    function showToast(msg) {
+      const c = document.getElementById('toastContainer');
+      const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+      c.appendChild(t); setTimeout(() => t.remove(), 3000);
+    }
+
+    // ─── New Features ─────────────────────────────────────────────
+    function copyText(btn) {
+      const text = decodeURIComponent(btn.getAttribute('data-text'));
+      navigator.clipboard.writeText(text).then(() => {
+        btn.innerHTML = '<span class="material-icons-round" style="font-size:16px; color:var(--success);">check</span>';
+        setTimeout(() => {
+          btn.innerHTML = '<span class="material-icons-round" style="font-size:16px; color:var(--text-3);">content_copy</span>';
+        }, 2000);
+      });
+    }
+
+    function speakText(btn) {
+      if (!('speechSynthesis' in window)) return showToast('Sisteminiz bunu desteklemiyor.');
+      if (window.speechSynthesis.speaking) return window.speechSynthesis.cancel();
+
+      const text = decodeURIComponent(btn.getAttribute('data-text'));
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'tr-TR';
+
+      // Ses seçimi (Türkçe sesleri bul)
+      const setVoice = () => {
+        const voices = window.speechSynthesis.getVoices();
+        const trVoice = voices.find(v => v.lang.includes('tr') || v.lang.includes('TR'));
+        if (trVoice) u.voice = trVoice;
+
+        btn.innerHTML = '<span class="material-icons-round" style="font-size:16px; color:var(--accent-purple);">stop</span>';
+        u.onend = () => {
+          btn.innerHTML = '<span class="material-icons-round" style="font-size:16px; color:var(--text-3);">volume_up</span>';
+        };
+        window.speechSynthesis.speak(u);
+      };
+
+      // Sesler henüz yüklenmediyse bekle, sonra çal
+      if (window.speechSynthesis.getVoices().length === 0) {
+        window.speechSynthesis.onvoiceschanged = setVoice;
+      } else {
+        setVoice();
+      }
+    }
+
+    // Initial marked parse loop for server-rendered messages
+    document.addEventListener("DOMContentLoaded", () => {
+      if (document.getElementById('chatMessages').classList.contains('active')) {
+        // Only parse if existing messages are loaded server side (and thus just have text content and markdown includes inside .md-content)
+        // To support initial highlight + wrap, we trigger it on existing .md-content blocks
+        document.querySelectorAll('.md-content').forEach(content => {
+          content.querySelectorAll('pre code').forEach(b => hljs.highlightElement(b));
+          content.querySelectorAll('pre').forEach(pre => { if (!pre.previousElementSibling?.classList.contains('code-head')) wrapCode(pre); });
+        });
+        scrollDown();
+      }
+    });
+
+    // ─── Premium Features ──────────────────────────────────────────
+    function togglePremiumMenu() {
+      document.getElementById('premiumMenu').classList.toggle('active');
+    }
+
+    // Voice Input
+    let recognition;
+    function toggleVoice() {
+      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        return showToast('Tarayıcınız ses tanımayı desteklemiyor.');
+      }
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!recognition) {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'tr-TR';
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = () => {
+          document.getElementById('voiceBtn').classList.add('voice-active');
+          showToast('Dinleniyor...');
+        };
+        recognition.onresult = (e) => {
+          const text = e.results[0][0].transcript;
+          chatInput.value += (chatInput.value ? ' ' : '') + text;
+          chatInput.dispatchEvent(new Event('input'));
+        };
+        recognition.onend = () => {
+          document.getElementById('voiceBtn').classList.remove('voice-active');
+        };
+        recognition.onerror = () => {
+          document.getElementById('voiceBtn').classList.remove('voice-active');
+          showToast('Ses tanıma hatası oluştu.');
+        };
+      }
+
+      if (document.getElementById('voiceBtn').classList.contains('voice-active')) {
+        recognition.stop();
+      } else {
+        recognition.start();
+      }
+    }
+
+    // Export Chat
+    function exportChat(format) {
+      if (history.length === 0) return showToast('Dışa aktarılacak mesaj yok.');
+      let content = '';
+      if (format === 'md') {
+        content = history.map(m => `### ${m.role === 'user' ? 'Siz' : 'Luna'}\n${m.parts[0].text}\n\n`).join('');
+        downloadFile(content, `luna_chat_${SESSION_ID}.md`, 'text/markdown');
+      } else if (format === 'pdf') {
+        showToast('PDF oluşturma yakında eklenecek. Şimdilik Markdown kullanabilirsiniz.');
+      }
+      togglePremiumMenu();
+    }
+
+    function downloadFile(content, filename, type) {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a); URL.revokeObjectURL(url);
+    }
+
+    // AI Summary
+    async function summarizeChat() {
+      if (history.length < 2) return showToast('Özetlemek için daha fazla mesaj gerekli.');
+      togglePremiumMenu();
+      const thinkId = addThinking();
+      
+      const fd = new FormData();
+      fd.append('message', 'Lütfen şu ana kadar konuştuklarımızı 3 kısa cümlede özetle.');
+      fd.append('sessionId', SESSION_ID);
+      fd.append('history', JSON.stringify(history));
+      fd.append('isSearchMode', false);
+
+      try {
+        const res = await fetch('/api/chat', { method: 'POST', body: fd });
+        const data = await res.json();
+        removeEl(thinkId);
+        if (data.success) {
+          addLunaMessage('✨ **Sohbet Özeti:**\n\n' + data.response);
+        }
+      } catch {
+        removeEl(thinkId);
+        showToast('Özet oluşturulamadı.');
+      }
+    }
+
+    // Persona Selection
+    function togglePersonaMenu() {
+      document.getElementById('personaMenu').classList.toggle('active');
+    }
+    function setPersona(p) {
+      showToast(`Persona ${p} olarak ayarlandı.`);
+      document.getElementById('personaMenu').classList.remove('active');
+      togglePremiumMenu();
+      // Persona logic can be added to system prompt on next message
+      localStorage.setItem('luna_persona', p);
+    }
+
+    // Template Selection
+    function toggleTemplateMenu() {
+      document.getElementById('templateMenu').classList.toggle('active');
+    }
+
+    // Focus Mode
+    function toggleFocusMode() {
+      document.body.classList.toggle('focus-mode');
+      showToast(document.body.classList.contains('focus-mode') ? 'Odak modu aktif' : 'Odak modu kapalı');
+      togglePremiumMenu();
+    }
+
+    // Slider Updates
+    function updateSlider(type, val) {
+      if (type === 'Creativity') {
+        document.getElementById('valCreativity').textContent = val;
+        localStorage.setItem('luna_creativity', val);
+      } else if (type === 'Speed') {
+        const labels = ['Yavaş', 'Normal', 'Standart', 'Hızlı', 'Işık'];
+        document.getElementById('valSpeed').textContent = labels[val-1];
+        localStorage.setItem('luna_speed', val);
+      }
+    }
+
+    // Theme Switcher
+    function toggleTheme(theme) {
+      if (theme === 'oled') {
+        document.body.classList.toggle('theme-oled');
+        document.body.classList.remove('theme-glass');
+      } else if (theme === 'glass') {
+        document.body.classList.toggle('theme-glass');
+        document.body.classList.remove('theme-oled');
+      }
+      const currentTheme = document.body.className;
+      localStorage.setItem('luna_theme', currentTheme);
+      // Don't close premium menu so user can toggle other things, but submenus should close
+      document.getElementById('personaMenu').classList.remove('active');
+      document.getElementById('templateMenu').classList.remove('active');
+    }
+
+    // Clear All Data
+    function clearAllData() {
+      if (confirm('Tüm sohbet geçmişinizi ve ayarlarınızı silmek istediğinize emin misiniz?')) {
+        localStorage.clear();
+        window.location.reload();
+      }
+    }
+
+    // Load saved settings
+    window.addEventListener('load', () => {
+      const savedTheme = localStorage.getItem('luna_theme');
+      if (savedTheme) document.body.className = savedTheme;
+    });
+
+    // Check for template from /templates page
+    const tmpl = sessionStorage.getItem('lunaTemplate');
+    if (tmpl) { sessionStorage.removeItem('lunaTemplate'); setInput(tmpl); }
+
+    // Auto-Title
+    function updateChatTitle() {
+      if (history.length >= 2 && history.length <= 4) {
+        const firstMsg = history.find(m => m.role === 'user')?.parts[0].text || '';
+        if (firstMsg) {
+          const title = firstMsg.substring(0, 30);
+          // In a real app, you'd send this to the server to update the DB
+          // For LS mode, we can just update the UI
+          showToast('Sohbet başlığı otomatik güncellendi.');
+        }
+      }
+    }
+
+    // Markdown Preview Toggle
+    function toggleMarkdownPreview() {
+      const msgs = document.querySelectorAll('.md-content');
+      msgs.forEach(m => {
+        const rendered = m.querySelector('.msg-text-rendered');
+        const raw = m.querySelector('.msg-text-raw');
+        if (rendered && raw) {
+          if (rendered.style.display === 'none') {
+            rendered.style.display = 'block';
+            raw.style.display = 'none';
+          } else {
+            rendered.style.display = 'none';
+            raw.style.display = 'block';
+          }
+        }
+      });
+      showToast('Markdown görünümü değiştirildi.');
+      togglePremiumMenu();
+    }
+
+    // Health Monitor
+    function toggleHealthMonitor() {
+      const hm = document.getElementById('healthMonitor');
+      hm.classList.toggle('active');
+      if (hm.classList.contains('active')) {
+        updateHealth();
+      }
+      togglePremiumMenu();
+    }
+
+    function updateHealth() {
+      if (window.performance && window.performance.memory) {
+        document.getElementById('healthMem').textContent = Math.round(window.performance.memory.usedJSHeapSize / 1048576) + 'MB';
+      }
+      document.getElementById('healthSess').textContent = SESSION_ID.substring(0, 8);
+    }
+
+    // Wrap the existing addLunaMessage to include the new structure
+    const originalAddLunaMessage = addLunaMessage;
+    addLunaMessage = function(text) {
+      const row = document.createElement('div');
+      row.className = 'message-row';
+      row.innerHTML = `
+        <div class="message-avatar-wrap">
+          <div class="msg-avatar luna-avatar"><img src="https://i.imgur.com/X4GG8BF.png" alt="Luna"></div>
+        </div>
+        <div class="message-content md-content" data-raw-content="${escHtml(text)}">
+          <div class="msg-text-rendered">${marked.parse(text)}</div>
+          <div class="msg-text-raw" style="display:none; font-family:monospace; white-space:pre-wrap; font-size:0.85rem;">${escHtml(text)}</div>
+          <div class="msg-actions" style="display:flex; gap:8px; margin-top:8px;">
+            <button class="btn-icon" onclick="copyText(this)" data-text="${encodeURIComponent(text)}"><span class="material-icons-round" style="font-size:16px;">content_copy</span></button>
+            <button class="btn-icon" onclick="speakText(this)" data-text="${encodeURIComponent(text.replace(/[*#_`]/g, ''))}"><span class="material-icons-round" style="font-size:16px;">volume_up</span></button>
+          </div>
+        </div>`;
+      chatMessages.appendChild(row);
+      row.querySelectorAll('pre code').forEach(b => hljs.highlightElement(b));
+      row.querySelectorAll('pre').forEach(pre => wrapCode(pre));
+      scrollDown();
+      updateChatTitle();
+    };
+
+    // Close menus on click outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#premiumMenu') && !e.target.closest('.btn-search-toggle') && !e.target.closest('#personaMenu') && !e.target.closest('#templateMenu')) {
+        document.getElementById('premiumMenu').classList.remove('active');
+        document.getElementById('personaMenu').classList.remove('active');
+        document.getElementById('templateMenu').classList.remove('active');
+      }
+    });
+  </script>
+</body>
+
+</html>

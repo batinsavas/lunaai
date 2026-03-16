@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Güvenlik</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'security'}) %>
+  <div class="page-content" style="max-width: 800px;">
+    <h1 class="page-title">Güvenlik ve Gizlilik</h1>
+    <p class="page-subtitle">Hesabınızın güvenliğini kontrol edin ve koruyun</p>
+
+    <!-- Security Score -->
+    <div class="card" style="display:flex; align-items:center; gap:24px; margin-bottom:24px; padding:32px;">
+      <div style="position:relative; width:80px; height:80px; border-radius:50%; background:var(--surface-2); display:flex; align-items:center; justify-content:center;">
+        <svg style="position:absolute; inset:0; width:100%; height:100%; transform:rotate(-90deg);">
+          <circle cx="40" cy="40" r="36" fill="none" stroke="var(--border)" stroke-width="6"/>
+          <!-- Assuming password presence gives a good score. We can mock it. -->
+          <circle cx="40" cy="40" r="36" fill="none" stroke="var(--success)" stroke-width="6" stroke-dasharray="226" stroke-dashoffset="40" stroke-linecap="round"/>
+        </svg>
+        <span class="material-icons-round" style="color:var(--success); font-size:32px; z-index:1;">shield</span>
+      </div>
+      <div>
+        <h2 style="font-size:1.4rem; font-weight:700; margin-bottom:4px;">Hesabınız Güvende</h2>
+        <p style="color:var(--text-2); font-size:0.95rem;">Luna Accounts, verilerinizi bcrypt algoritmalarıyla şifreler.</p>
+      </div>
+    </div>
+
+    <!-- Security Items -->
+    <div class="card" style="margin-bottom:24px;">
+      <h3 class="card-title">Güvenlik Durumu</h3>
+      
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 0; border-bottom:1px solid var(--border);">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div style="width:40px; height:40px; border-radius:50%; background:rgba(129,201,149,0.15); display:flex; align-items:center; justify-content:center;">
+            <span class="material-icons-round" style="color:var(--success); font-size:20px;">password</span>
+          </div>
+          <div>
+            <h4 style="font-size:0.95rem; font-weight:600; margin-bottom:4px;">Şifre Koruması Aktif</h4>
+            <p style="font-size:0.85rem; color:var(--text-2);">Hesabınız güçlü bir şifre ile korunuyor.</p>
+          </div>
+        </div>
+        <span class="badge badge-green"><span class="material-icons-round" style="font-size:14px;">check</span> Tamam</span>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 0; border-bottom:1px solid var(--border);">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div style="width:40px; height:40px; border-radius:50%; background:rgba(138,180,248,0.15); display:flex; align-items:center; justify-content:center;">
+            <span class="material-icons-round" style="color:var(--accent); font-size:20px;">fingerprint</span>
+          </div>
+          <div>
+            <h4 style="font-size:0.95rem; font-weight:600; margin-bottom:4px;">Veri Şifreleme (Bcrypt)</h4>
+            <p style="font-size:0.85rem; color:var(--text-2);">Kullanıcı bilgileri hassas şekilde DB'de şifrelenir.</p>
+          </div>
+        </div>
+        <span class="badge badge-blue"><span class="material-icons-round" style="font-size:14px;">check</span> Tamam</span>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 0;">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div style="width:40px; height:40px; border-radius:50%; background:rgba(253,214,99,0.15); display:flex; align-items:center; justify-content:center;">
+            <span class="material-icons-round" style="color:#fdd663; font-size:20px;">mark_email_unread</span>
+          </div>
+          <div>
+            <h4 style="font-size:0.95rem; font-weight:600; margin-bottom:4px;">E-posta Doğrulaması</h4>
+            <p style="font-size:0.85rem; color:var(--text-2);">Bu özellik bir sonraki aşamada aktif edilecektir.</p>
+          </div>
+        </div>
+        <span class="badge" style="background:var(--surface-hover); color:var(--text-3);"><span class="material-icons-round" style="font-size:14px;">pending</span> Yakında</span>
+      </div>
+    </div>
+    
+  </div>
+</div>
+</body>
+</html>

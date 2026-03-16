@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Geçmiş</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="toast-container" id="toastContainer"></div>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'history'}) %>
+  <div class="page-content">
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:24px;">
+      <div>
+        <h1 class="page-title">Sohbet Geçmişi</h1>
+        <p class="page-subtitle" style="margin-bottom:0;">Önceki sohbetlerinizi görüntüleyin veya silin</p>
+      </div>
+      <% if (conversations.length > 0) { %>
+      <button class="btn btn-danger btn-sm" onclick="clearChats()">
+        <span class="material-icons-round" style="font-size:16px;">delete_sweep</span>
+        Tümünü Sil
+      </button>
+      <% } %>
+    </div>
+
+    <% if (conversations.length === 0) { %>
+      <div class="card" style="text-align:center; padding:60px 20px;">
+        <span class="material-icons-round" style="font-size:48px; color:var(--text-3); margin-bottom:16px;">history</span>
+        <h3 style="font-size:1.1rem; color:var(--text); margin-bottom:8px;">Henüz sohbet yok</h3>
+        <p style="color:var(--text-2); font-size:0.9rem; margin-bottom:20px;">İlk sohbetinize başlayarak Luna ile tanışın.</p>
+        <a href="/chat" class="btn btn-filled">Yeni Sohbet Başlat</a>
+      </div>
+    <% } else { %>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+      <% conversations.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).forEach(chat => { 
+          const f = chat.messages.find(m => m.role === 'user');
+          const title = f ? f.content.substring(0, 50) + (f.content.length > 50 ? '...' : '') : 'Yeni Sohbet';
+          const msgCount = chat.messages.length;
+      %>
+        <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:16px;">
+          <div>
+            <h3 style="font-size:0.95rem; font-weight:600; margin-bottom:6px; color:var(--text);"><%= title || 'Dosya Analizi' %></h3>
+            <div style="display:flex; gap:12px; font-size:0.8rem; color:var(--text-2); align-items:center;">
+              <span style="display:flex; align-items:center; gap:4px;"><span class="material-icons-round" style="font-size:14px;">calendar_today</span> <%= new Date(chat.createdAt).toLocaleString('tr-TR') %></span>
+              <span style="display:flex; align-items:center; gap:4px;"><span class="material-icons-round" style="font-size:14px;">forum</span> <%= msgCount %> mesaj</span>
+            </div>
+          </div>
+          <button class="btn-icon" onclick="deleteChat('<%= chat.id %>')" title="Bu sohbeti sil">
+            <span class="material-icons-round" style="font-size:18px; color:var(--danger);">delete_outline</span>
+          </button>
+        </div>
+      <% }); %>
+      </div>
+    <% } %>
+  </div>
+</div>
+<script>
+async function deleteChat(id) {
+  if (!confirm('Bu sohbeti silmek istediğinize emin misiniz?')) return;
+  await fetch(`/api/conversations/${id}`, { method: 'DELETE' });
+  location.reload();
+}
+async function clearChats() {
+  if (!confirm('Tüm sohbet geçmişini silmek istediğinize emin misiniz?')) return;
+  await fetch('/api/conversations', { method: 'DELETE' });
+  location.reload();
+}
+</script>
+</body>
+</html>

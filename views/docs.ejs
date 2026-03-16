@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Dokümantasyon</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'docs'}) %>
+  <div class="page-content" style="max-width: 900px;">
+    <h1 class="page-title">Dokümantasyon (API)</h1>
+    <p class="page-subtitle">LunaB1 API entegrasyonu ve kullanım kılavuzu</p>
+
+    <div class="alert alert-info" style="margin-bottom:24px;">
+      <span class="material-icons-round" style="margin-right:8px; font-size:24px;">construction</span> 
+      <div>
+        <h4 style="font-weight:600; margin-bottom:4px;">Geliştirici Sürümü</h4>
+        <p style="font-size:0.85rem; line-height:1.5;">Bu dokümantasyon, yerel sunucunuzda çalışan `server.js` üzerinden HTTP POST istekleriyle LunaB1 altyapısına nasıl erişebileceğinizi özetler. Gelecek sürümlerde public API anahtarları açılacaktır.</p>
+      </div>
+    </div>
+
+    <!-- Chat Endpoint -->
+    <div class="card" style="margin-bottom:24px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="font-size:1.1rem; font-weight:600;">Chat Endpoint</h3>
+        <span class="badge badge-green" style="font-family:monospace; font-size:0.8rem;">POST /api/chat</span>
+      </div>
+      <p style="color:var(--text-2); font-size:0.9rem; margin-bottom:16px;">Sohbet ve dosya (resim/belge) analizi için ana giriş noktası.</p>
+      
+      <div style="background:var(--surface-2); border-radius:var(--radius-md); padding:16px; margin-bottom:16px; border:1px solid var(--border);">
+        <h4 style="font-size:0.85rem; color:var(--text-3); text-transform:uppercase; margin-bottom:8px;">İstek Tipi (Content-Type)</h4>
+        <p style="font-size:0.9rem; font-family:monospace; color:var(--accent);">multipart/form-data</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Parametre</th>
+              <th>Tür</th>
+              <th>Açıklama</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-family:monospace; color:var(--accent-purple);">message</td>
+              <td>String</td>
+              <td>Modele gönderilecek metin girdisi. Dosya yüklenmişse bu "prompt" olur.</td>
+            </tr>
+            <tr>
+              <td style="font-family:monospace; color:var(--accent-purple);">file</td>
+              <td>File (Blob)</td>
+              <td>(Opsiyonel) Görsel (.jpg, .png vb) veya metin dosyası.</td>
+            </tr>
+            <tr>
+              <td style="font-family:monospace; color:var(--accent-purple);">history</td>
+              <td>String (JSON)</td>
+              <td>Sohbet bağlamını korumak için geçmiş mesaj dizisi.</td>
+            </tr>
+            <tr>
+              <td style="font-family:monospace; color:var(--accent-purple);">sessionId</td>
+              <td>String</td>
+              <td>Bağlantılı sohbet geçmişi kaydedilecek oturum numarası.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Health Endpoint -->
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="font-size:1.1rem; font-weight:600;">Health Check</h3>
+        <span class="badge badge-blue" style="font-family:monospace; font-size:0.8rem;">GET /api/health</span>
+      </div>
+      <p style="color:var(--text-2); font-size:0.9rem; margin-bottom:16px;">LunaB1 modelinin bağlantı durumunu ve sunucu kullanım süresini (uptime) döndürür.</p>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

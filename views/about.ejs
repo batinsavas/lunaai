@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Hakkında</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'about'}) %>
+  <div class="page-content" style="max-width: 800px;">
+    <h1 class="page-title">Luna AI Hakkında</h1>
+    <p class="page-subtitle">Sistem ve altyapı hakkında detaylı bilgi</p>
+
+    <div class="card" style="margin-bottom:24px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <img src="https://i.imgur.com/X4GG8BF.png" alt="Luna" style="width:48px; height:48px; border-radius:12px;">
+          <div>
+            <h2 style="font-size:1.4rem; font-weight:700;">Luna AI Sürüm 2.1</h2>
+            <p style="color:var(--text-2); font-size:0.9rem;">Geliştirici: LunaSoft / Batın Savaş</p>
+          </div>
+        </div>
+        <span class="badge badge-purple" style="font-size:0.85rem; padding:6px 12px;">Aktif ve Güncel</span>
+      </div>
+
+      <div style="line-height:1.7; color:var(--text); font-size:0.95rem;">
+        <p style="margin-bottom:16px;">Luna AI, gelişmiş üretken yapay zeka yeteneklerini basit ve şık bir arayüzle kullanıcılara sunan, her yönüyle yerli ve yenilikçi bir platformdur. <b>LunaB1</b> modeli etrafında şekillenen altyapımız, kompleks görevleri saniyeler içinde çözmeniz için tasarlandı.</p>
+        <p style="margin-bottom:16px;">Görsel analizi, çoklu dosya işleme, kod yazma ve HTML önizleme gibi araçlar sayesinde hem geliştiriciler hem de son kullanıcılar için kapsamlı bir asistan rolü üstlenir.</p>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:24px;">
+        <a href="/developer" class="btn btn-outline" style="justify-content:center;">
+          <span class="material-icons-round">person</span> Geliştirici Profili
+        </a>
+        <a href="/changelog" class="btn btn-outline" style="justify-content:center;">
+          <span class="material-icons-round">update</span> Sürüm Notları
+        </a>
+        <a href="/roadmap" class="btn btn-outline" style="justify-content:center;">
+          <span class="material-icons-round">map</span> Yol Haritası
+        </a>
+        <a href="/security" class="btn btn-outline" style="justify-content:center;">
+          <span class="material-icons-round">shield</span> Güvenlik Bildirimi
+        </a>
+      </div>
+    </div>
+
+    <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:16px;">Temel Özellikler</h3>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+      <div class="card">
+        <span class="material-icons-round" style="color:var(--accent-purple); font-size:28px; margin-bottom:10px;">settings_system_daydream</span>
+        <h4 style="margin-bottom:6px; font-size:1rem;">LunaB1 Motoru</h4>
+        <p style="font-size:0.85rem; color:var(--text-2); line-height:1.5;">Batın Savaş tarafından özel olarak kurgulanan yapay zeka çekirdeği.</p>
+      </div>
+      <div class="card">
+        <span class="material-icons-round" style="color:var(--accent); font-size:28px; margin-bottom:10px;">draw</span>
+        <h4 style="margin-bottom:6px; font-size:1rem;">Minimalist Tasarım</h4>
+        <p style="font-size:0.85rem; color:var(--text-2); line-height:1.5;">Göz yormayan, saf içerik odaklı karanlık mod arayüzü.</p>
+      </div>
+      <div class="card">
+        <span class="material-icons-round" style="color:var(--success); font-size:28px; margin-bottom:10px;">lock</span>
+        <h4 style="margin-bottom:6px; font-size:1rem;">Luna Accounts</h4>
+        <p style="font-size:0.85rem; color:var(--text-2); line-height:1.5;">Tamamen şifrelenmiş, profilli ve güvenli oturum yönetimi.</p>
+      </div>
+      <div class="card">
+        <span class="material-icons-round" style="color:#fdd663; font-size:28px; margin-bottom:10px;">data_object</span>
+        <h4 style="margin-bottom:6px; font-size:1rem;">JSON Mimari</h4>
+        <p style="font-size:0.85rem; color:var(--text-2); line-height:1.5;">Sunucuya ekstra yük bindirmeden hızlı ve güvenilir veri kaydı.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

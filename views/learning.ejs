@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Öğrenme Günlüğü</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'admin'}) %>
+  <div class="page-content">
+    <h1 class="page-title">Öğrenme Günlüğü</h1>
+    <p class="page-subtitle">Luna'nın kullanıcılardan öğrendiği ilgi çekici konular</p>
+
+    <% if (log.length === 0) { %>
+      <div class="card" style="text-align:center; padding:60px 20px;">
+        <span class="material-icons-round" style="font-size:48px; color:var(--text-3); margin-bottom:16px;">auto_stories</span>
+        <h3 style="font-size:1.1rem; color:var(--text); margin-bottom:8px;">Günlük şu an boş</h3>
+        <p style="color:var(--text-2); font-size:0.9rem;">Kullanıcıların sorduğu uzun sorular, modelin anlayışını geliştirmesi için burada listelenir.</p>
+      </div>
+    <% } else { %>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Öğrenilen Konu (Soru Özeti)</th>
+                <th>Tarih</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% log.forEach(l => { %>
+                <tr>
+                  <td style="display:flex; align-items:center; gap:8px;">
+                    <span class="material-icons-round" style="color:var(--accent); font-size:18px;">lightbulb</span>
+                    <%= l.question %>...
+                  </td>
+                  <td style="color:var(--text-2);"><%= new Date(l.timestamp).toLocaleString('tr-TR') %></td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</div>
+</body>
+</html>

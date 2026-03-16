@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Gizlilik Politikası</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'about'}) %>
+  <div class="page-content" style="max-width: 800px;">
+    <h1 class="page-title">Gizlilik Politikası</h1>
+    <p class="page-subtitle">Verilerinizi nasıl işlediğimizi ve koruduğumuzu öğrenin</p>
+
+    <div class="card" style="margin-bottom:24px;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px;">
+        <span class="material-icons-round" style="font-size:28px; color:var(--success);">security</span>
+        <h3 style="font-size:1.2rem; font-weight:600;">Temel İlkemiz: Tam Gizlilik</h3>
+      </div>
+      <div style="color:var(--text-2); font-size:0.95rem; line-height:1.7;">
+        <p style="margin-bottom:12px;">Luna AI olarak, yapay zeka deneyiminizi güvenli ve özel kılmak temel prensibimizdir. Sistem, kişisel verilerinizi toplamak veya satmak üzerine inşa edilmemiştir.</p>
+        <p style="color:var(--text);">Platformdaki tüm etkileşimleriniz (sohbetler, resimler, kod parçaları) yalnızca yerel <span class="badge badge-purple">JSON Veritabanımız</span> içerisinde depolanır.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:12px; color:var(--text);">Toplanan Veriler</h3>
+      <ul style="padding-left:20px; color:var(--text-2); font-size:0.95rem; line-height:1.7; margin-bottom:16px;">
+        <li><b>Kayıt Bilgileri:</b> Adınız, soyadınız ve şifrelenmiş parolanız.</li>
+        <li><b>Sohbet Geçmişi:</b> AI ile kurduğunuz etkileşimler.</li>
+        <li><b>Analitik:</b> Sistem kalitesini artırmak için anonim kullanım istatistikleri.</li>
+      </ul>
+
+      <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:12px; color:var(--text);">Veri Güvenliği (Bcrypt)</h3>
+      <p style="color:var(--text-2); font-size:0.95rem; line-height:1.7; margin-bottom:16px;">Şifreleriniz <b>bcryptjs</b> algoritmasıyla hashlenerek saklanır. Sunucu sızıntısı durumunda dahi şifreleriniz geri döndürülemez formattadır. Sohbetleriniz 3. taraflarla (reklamcılar, veri tüccarları) kesinlikle paylaşılmaz.</p>
+      
+      <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:12px; color:var(--text);">Kullanıcı Hakları</h3>
+      <p style="color:var(--text-2); font-size:0.95rem; line-height:1.7;">İstediğiniz zaman <b>Ayarlar > Veri İndirme</b> menüsünden tüm chat geçmişinizi dışa aktarabilir veya hesabınızı kalıcı olarak silebilirsiniz.</p>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

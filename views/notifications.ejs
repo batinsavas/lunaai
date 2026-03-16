@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Bildirimler</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'notifications'}) %>
+  <div class="page-content" style="max-width: 800px;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:24px;">
+      <div>
+        <h1 class="page-title">Bildirimler</h1>
+        <p class="page-subtitle" style="margin-bottom:0;">Sistem güncellemeleri ve uyarılar</p>
+      </div>
+      <% if (notifications.length > 0) { %>
+        <button class="btn btn-tonal btn-sm"><span class="material-icons-round" style="font-size:16px;">done_all</span> Tümünü Okundu İşaretle</button>
+      <% } %>
+    </div>
+
+    <% if (notifications.length === 0) { %>
+      <div class="card" style="text-align:center; padding:60px 20px;">
+        <span class="material-icons-round" style="font-size:48px; color:var(--text-3); margin-bottom:16px;">notifications_none</span>
+        <h3 style="font-size:1.1rem; color:var(--text); margin-bottom:8px;">Bildiriminiz bulunmuyor</h3>
+        <p style="color:var(--text-2); font-size:0.9rem;">Sistem güncellemeleri ve önemli haberler burada görünür.</p>
+      </div>
+    <% } else { %>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <% notifications.forEach(item => { %>
+          <div class="card" style="display:flex; gap:16px; align-items:flex-start; padding:16px; border-left:3px solid <%= item.type==='update'?'var(--accent)':(item.type==='alert'?'var(--danger)':'var(--success)') %>;">
+            <div style="flex-shrink:0; margin-top:2px;">
+              <span class="material-icons-round" style="font-size:24px; color:<%= item.type==='update'?'var(--accent)':(item.type==='alert'?'var(--danger)':'var(--success)') %>;">
+                <%= item.type==='update'?'info':(item.type==='alert'?'warning':'campaign') %>
+              </span>
+            </div>
+            <div style="flex:1;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                <h4 style="font-size:0.95rem; font-weight:600;"><%= item.title %></h4>
+                <span style="font-size:0.8rem; color:var(--text-3);"><%= new Date(item.date).toLocaleDateString('tr-TR') %></span>
+              </div>
+              <p style="color:var(--text-2); font-size:0.9rem; line-height:1.5;"><%= item.message %></p>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } %>
+
+    <!-- Hardcoded Welcome Message -->
+    <% if (notifications.length === 0) { %>
+      <div style="display:flex; flex-direction:column; gap:12px; margin-top:16px;">
+        <div class="card" style="display:flex; gap:16px; align-items:flex-start; padding:16px; border-left:3px solid var(--accent-purple);">
+          <div style="flex-shrink:0; margin-top:2px;">
+            <span class="material-icons-round" style="font-size:24px; color:var(--accent-purple);">stars</span>
+          </div>
+          <div style="flex:1;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+              <h4 style="font-size:0.95rem; font-weight:600;">Luna AI 2.1 Çıktı!</h4>
+              <span style="font-size:0.8rem; color:var(--text-3);">Bugün</span>
+            </div>
+            <p style="color:var(--text-2); font-size:0.9rem; line-height:1.5;">Luna Accounts eklendi, Material UI yenilendi. Yeni özellikleri keşfetmeye başlayabilirsiniz.</p>
+          </div>
+        </div>
+      </div>
+    <% } %>
+
+  </div>
+</div>
+</body>
+</html>

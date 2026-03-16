@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Görsel Analiz</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+<div class="toast-container" id="toastContainer"></div>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'vision'}) %>
+  <div class="page-content" style="max-width:900px; display:flex; flex-direction:column; height:calc(100vh - 80px);">
+    <div style="flex-shrink:0;">
+      <h1 class="page-title">Görsel Analiz (Vision)</h1>
+      <p class="page-subtitle">Pikselden anlama: LunaB1 ile resimlerinizi analiz edin</p>
+    </div>
+
+    <!-- Interface -->
+    <div style="display:flex; gap:20px; flex:1; min-height:0;">
+      
+      <!-- Upload Panel -->
+      <div style="width:360px; display:flex; flex-direction:column; gap:16px;">
+        <div class="card" id="dropZone" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; border:2px dashed rgba(255,255,255,0.2); background:var(--surface); cursor:pointer; transition:var(--transition); position:relative; overflow:hidden;">
+          <input type="file" id="fileInput" accept="image/*" style="opacity:0; position:absolute; inset:0; cursor:pointer;" onchange="handleFileSelect(event)">
+          <div id="uploadHint">
+            <span class="material-icons-round" style="font-size:48px; color:var(--accent); margin-bottom:12px;">cloud_upload</span>
+            <p style="font-size:1rem; font-weight:600; color:var(--text); margin-bottom:4px;">Görsel Yükle</p>
+            <p style="font-size:0.85rem; color:var(--text-3);">Tıkla veya sürükle-bırak (JPG, PNG)</p>
+          </div>
+          <img id="imagePreview" style="display:none; position:absolute; inset:0; width:100%; height:100%; object-fit:contain; background:var(--bg);">
+        </div>
+        
+        <div class="card">
+          <label class="form-label">Soru veya İstek</label>
+          <textarea id="promptInput" class="form-textarea" rows="3" placeholder="Örn: Bu resimdeki detayları açıklayabilir misin?">Bu resimdeki detayları detaylı biçimde açıklayabilir misin?</textarea>
+          <button class="btn btn-filled" id="analyzeBtn" style="width:100%; justify-content:center; margin-top:12px;" disabled>
+            <span class="material-icons-round">image_search</span> Analiz Et
+          </button>
+        </div>
+      </div>
+
+      <!-- Result Panel -->
+      <div class="card" style="flex:1; display:flex; flex-direction:column; padding:0; overflow:hidden;">
+        <div style="padding:16px; border-bottom:1px solid var(--border); background:var(--surface-2);">
+          <h3 style="font-size:1rem; display:flex; align-items:center; gap:8px;">
+            <span class="material-icons-round" style="color:var(--accent-purple);">auto_awesome</span>
+            Analiz Sonucu
+          </h3>
+        </div>
+        <div id="resultContent" style="flex:1; overflow-y:auto; padding:20px; color:var(--text); line-height:1.6; font-size:0.95rem;">
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:var(--text-3); text-align:center;">
+            <span class="material-icons-round" style="font-size:48px; margin-bottom:12px; opacity:0.5;">insert_photo</span>
+            <p>Sonuçlar burada görüntülenecek.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+let currentFile = null;
+const dropZone = document.getElementById('dropZone');
+const preview = document.getElementById('imagePreview');
+const hint = document.getElementById('uploadHint');
+const btn = document.getElementById('analyzeBtn');
+
+dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.style.borderColor='var(--accent-purple)'; dropZone.style.background='rgba(138,108,247,0.05)'; });
+dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor='rgba(255,255,255,0.2)'; dropZone.style.background='var(--surface)'; });
+dropZone.addEventListener('drop', (e) => {
+  e.preventDefault(); dropZone.style.borderColor='rgba(255,255,255,0.2)'; dropZone.style.background='var(--surface)';
+  if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]);
+});
+
+function handleFileSelect(event) {
+  if (event.target.files[0]) processFile(event.target.files[0]);
+}
+
+function processFile(file) {
+  if(!file.type.startsWith('image/')) return showToast("Sadece görsel dosyaları desteklenir.");
+  currentFile = file;
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = 'block';
+  hint.style.display = 'none';
+  btn.disabled = false;
+}
+
+btn.addEventListener('click', async () => {
+  if(!currentFile) return;
+  const prompt = document.getElementById('promptInput').value.trim();
+  const resBox = document.getElementById('resultContent');
+  
+  btn.disabled = true;
+  btn.innerHTML = `<span class="material-icons-round">hourglass_empty</span> Analiz ediliyor...`;
+  resBox.innerHTML = `<div style="display:flex;align-items:center;gap:12px;color:var(--text-2);justify-content:center;height:100%;">
+    <span class="material-icons-round" style="animation:spin 2s linear infinite;">refresh</span> Luna resme bakıyor...
+  </div>
+  <style>@keyframes spin { 100% { transform:rotate(360deg); } }</style>`;
+
+  const fd = new FormData();
+  fd.append('file', currentFile);
+  fd.append('message', prompt);
+  // Optional: you can provide sessionid if you want to save it to a real chat, but for a one-off tool, this is fine
+  fd.append('sessionId', 'vision-task');
+
+  try {
+    const res = await fetch('/api/chat', { method:'POST', body:fd });
+    const data = await res.json();
+    if(data.success) {
+      resBox.className = 'md-content';
+      resBox.innerHTML = marked.parse(data.response);
+    } else {
+      resBox.innerHTML = `<div class="alert alert-error">${data.error}</div>`;
+    }
+  } catch {
+    resBox.innerHTML = `<div class="alert alert-error">Bir hata oluştu. Lütfen tekrar deneyin.</div>`;
+  }
+  
+  btn.disabled = false;
+  btn.innerHTML = `<span class="material-icons-round">image_search</span> Analiz Et`;
+});
+
+function showToast(msg) {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+  c.appendChild(t); setTimeout(() => t.remove(), 3000);
+}
+</script>
+</body>
+</html>

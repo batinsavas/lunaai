@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — İletişim</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="toast-container" id="toastContainer"></div>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'help'}) %>
+  <div class="page-content" style="max-width: 900px;">
+    <h1 class="page-title">İletişime Geçin</h1>
+    <p class="page-subtitle">Destek, iş birliği ve teknik sorularınız için buradayız</p>
+
+    <div style="display:flex; gap:24px; flex-wrap:wrap;">
+      
+      <!-- Contact Info -->
+      <div style="flex:1; min-width:300px; display:flex; flex-direction:column; gap:16px;">
+        <div class="card" style="display:flex; align-items:center; gap:16px;">
+          <div style="width:48px; height:48px; border-radius:50%; background:rgba(138,180,248,0.15); display:flex; justify-content:center; align-items:center;">
+            <span class="material-icons-round" style="color:var(--accent); font-size:24px;">email</span>
+          </div>
+          <div>
+            <h4 style="font-size:0.95rem; font-weight:600; color:var(--text-2); margin-bottom:4px;">E-posta Destek</h4>
+            <a href="mailto:destek@lunasoft.com" style="color:var(--text); font-weight:600; text-decoration:none; font-size:1.05rem;">destek@lunasoft.com</a>
+          </div>
+        </div>
+
+        <div class="card" style="display:flex; align-items:center; gap:16px;">
+          <div style="width:48px; height:48px; border-radius:50%; background:rgba(167,139,250,0.15); display:flex; justify-content:center; align-items:center;">
+            <span class="material-icons-round" style="color:var(--accent-purple); font-size:24px;">domain</span>
+          </div>
+          <div>
+            <h4 style="font-size:0.95rem; font-weight:600; color:var(--text-2); margin-bottom:4px;">Geliştirici Şirket</h4>
+            <span style="color:var(--text); font-weight:600; font-size:1.05rem;">LunaSoft (Batın Savaş)</span>
+          </div>
+        </div>
+
+        <div class="card" style="display:flex; align-items:center; gap:16px;">
+          <div style="width:48px; height:48px; border-radius:50%; background:rgba(129,201,149,0.15); display:flex; justify-content:center; align-items:center;">
+            <span class="material-icons-round" style="color:var(--success); font-size:24px;">bug_report</span>
+          </div>
+          <div>
+            <h4 style="font-size:0.95rem; font-weight:600; color:var(--text-2); margin-bottom:4px;">Hata Bildirimi</h4>
+            <a href="/feedback" style="color:var(--text); font-weight:600; text-decoration:none; font-size:1.05rem;">Geri Bildirim Formu</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="card" style="flex:1.5; min-width:300px;">
+        <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:16px;">Mesaj Gönderin</h3>
+        <form onsubmit="event.preventDefault(); document.querySelector('#sendBtn').innerHTML='<span class=\'material-icons-round\'>check</span> Gönderildi'; document.querySelector('#sendBtn').className='btn btn-success'; setTimeout(()=>location.reload(),2000);">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Adınız</label>
+              <input type="text" class="form-input" required placeholder="Adınız Soyadınız" value="<%= locals.user ? user.firstName + ' ' + user.lastName : '' %>">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">E-posta</label>
+              <input type="email" class="form-input" required placeholder="E-posta adresiniz" value="<%= locals.user ? user.email : '' %>">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Konu</label>
+            <input type="text" class="form-input" required placeholder="Mesajınızın konusu">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Mesaj</label>
+            <textarea class="form-textarea" rows="5" required placeholder="Detaylı mesajınızı buraya yazın..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-filled" id="sendBtn" style="width:100%; justify-content:center;">
+            <span class="material-icons-round">send</span> İletişime Geç
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

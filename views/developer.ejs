@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Geliştirici</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'about'}) %>
+  <div class="page-content" style="max-width: 760px;">
+    <h1 class="page-title">Geliştirici</h1>
+    <p class="page-subtitle">Luna AI'ın mimarı ile tanışın</p>
+
+    <div class="card" style="display:flex; gap:32px; align-items:flex-start; margin-bottom:24px;">
+      <div style="flex-shrink:0;">
+        <div class="avatar avatar-initials avatar-lg" style="width:120px; height:120px; font-size:3rem; background:linear-gradient(135deg,#c4b5fd,#93c5fd);">BS</div>
+      </div>
+      <div>
+        <h2 style="font-size:1.8rem; font-weight:800; margin-bottom:8px; display:flex; align-items:center; gap:8px;">
+          Batın Savaş
+          <span class="material-icons-round" style="color:#60a5fa; font-size:24px;" title="Doğrulanmış Geliştirici">verified</span>
+        </h2>
+        <p style="color:var(--accent-purple); font-weight:600; font-size:0.95rem; margin-bottom:16px;">Full-Stack Geliştirici & AI Mimarı (LunaSoft)</p>
+        <p style="color:var(--text-2); line-height:1.7; font-size:0.95rem; margin-bottom:24px;">
+          Luna AI, Google Gemini mimarisinden ilham alınarak baştan sona tasarlanmış özel bir yapay zeka platformudur. Amacımız, en gelişmiş çok modlu yapay zeka deneyimini herkes için erişilebilir, hızlı ve kullanışlı bir arayüzle sunmaktır.
+        </p>
+        
+        <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:12px;">Tech Stack</h3>
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+          <span class="badge badge-blue">Node.js</span>
+          <span class="badge badge-purple">Express.js</span>
+          <span class="badge badge-green">EJS</span>
+          <span class="badge badge-red">Vanilla CSS</span>
+          <span class="badge badge-blue">Google AI Studio</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <span class="material-icons-round" style="font-size:32px; color:var(--accent);">code</span>
+        <div class="stat-num">5K+</div>
+        <div class="stat-label">Satır Kod</div>
+      </div>
+      <div class="stat-card">
+        <span class="material-icons-round" style="font-size:32px; color:var(--success);">memory</span>
+        <div class="stat-num">LunaB1</div>
+        <div class="stat-label">Özel Model Modülü</div>
+      </div>
+      <div class="stat-card">
+        <span class="material-icons-round" style="font-size:32px; color:var(--accent-purple);">brush</span>
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Özel Tasarım</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

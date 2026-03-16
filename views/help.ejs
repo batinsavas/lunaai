@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Yardım Merkezi</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'help'}) %>
+  <div class="page-content" style="max-width: 800px;">
+    <h1 class="page-title">Yardım Merkezi</h1>
+    <p class="page-subtitle">Sık sorulan sorular ve iletişim kanalları</p>
+
+    <div class="card" style="margin-bottom:24px;">
+      <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:16px;">Sık Sorulan Sorular</h3>
+      
+      <div style="border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:12px;">
+        <h4 style="font-size:0.95rem; font-weight:600; margin-bottom:6px; display:flex; align-items:center; gap:8px;">
+          <span class="material-icons-round" style="color:var(--accent); font-size:18px;">keyboard_arrow_right</span>
+          Luna AI ücretli mi?
+        </h4>
+        <p style="font-size:0.88rem; color:var(--text-2); padding-left:26px; line-height:1.6;">Luna AI tamamen ücretsizdir ve Batın Savaş liderliğindeki LunaSoft tarafından geliştirilmiştir.</p>
+      </div>
+
+      <div style="border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:12px;">
+        <h4 style="font-size:0.95rem; font-weight:600; margin-bottom:6px; display:flex; align-items:center; gap:8px;">
+          <span class="material-icons-round" style="color:var(--accent); font-size:18px;">keyboard_arrow_right</span>
+          Verilerim nasıl korunuyor?
+        </h4>
+        <p style="font-size:0.88rem; color:var(--text-2); padding-left:26px; line-height:1.6;">Verileriniz yerel JSON veritabanımızda (fs/lowdb) tamamen şifrelenmiş biçimde depolanır. Mesajlarınız sadece size özeldir ve 3. şahıslarla paylaşılmaz.</p>
+      </div>
+
+      <div style="padding-bottom:12px;">
+        <h4 style="font-size:0.95rem; font-weight:600; margin-bottom:6px; display:flex; align-items:center; gap:8px;">
+          <span class="material-icons-round" style="color:var(--accent); font-size:18px;">keyboard_arrow_right</span>
+          Hangi modeli kullanıyor?
+        </h4>
+        <p style="font-size:0.88rem; color:var(--text-2); padding-left:26px; line-height:1.6;">Luna AI, en güncel ve kendi eğittiğimiz <span class="badge badge-purple" style="font-size:0.75rem;">LunaB1</span> modelini kullanarak sorularınıza yanıt verir.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:16px;">Bizimle İletişime Geçin</h3>
+      <p style="font-size:0.9rem; color:var(--text-2); margin-bottom:20px; line-height:1.6;">Hata bildirmek veya önerilerinizi sunmak için aşağıdaki yolları kullanabilirsiniz:</p>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <a href="/feedback" class="btn btn-outline" style="justify-content:flex-start; padding:12px 16px;">
+          <span class="material-icons-round" style="color:var(--accent-purple);">rate_review</span> Geri Bildirim Formu
+        </a>
+        <a href="mailto:contact@lunasoft.com" class="btn btn-outline" style="justify-content:flex-start; padding:12px 16px;">
+          <span class="material-icons-round" style="color:var(--accent);">email</span> contact@lunasoft.com
+        </a>
+        <a href="/faq" class="btn btn-tonal" style="justify-content:flex-start; padding:12px 16px;">
+          <span class="material-icons-round" style="color:var(--success);">help_center</span> Tüm SSS (Detaylı Yardım)
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

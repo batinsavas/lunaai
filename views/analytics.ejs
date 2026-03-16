@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Analitik Raporu</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'stats'}) %>
+  <div class="page-content" style="max-width: 900px;">
+    <h1 class="page-title">Detaylı Analitik</h1>
+    <p class="page-subtitle">Platformdaki etkileşim dağılımı ve istatistik analizleri</p>
+
+    <!-- Overview Details -->
+    <div class="card" style="margin-bottom:24px;">
+      <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:16px;">Etkileşim Dağılımı</h3>
+      
+      <% 
+        const txt = db.stats.totalMessages || 0;
+        const img = db.stats.totalImages || 0;
+        const doc = db.stats.totalFiles || 0;
+        const tot = (txt + img + doc) || 1; // avoid /0
+      %>
+
+      <!-- Progress Bars -->
+      <div style="margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.85rem;">
+          <span style="color:var(--text); display:flex; align-items:center; gap:6px;"><span class="material-icons-round" style="color:var(--accent-purple); font-size:16px;">chat</span> Metin Mesajları</span>
+          <span style="font-weight:600;"><%= Math.round((txt/tot)*100) %>%</span>
+        </div>
+        <div class="progress"><div class="progress-fill" style="width: <%= Math.round((txt/tot)*100) %>%; background:var(--accent-purple);"></div></div>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.85rem;">
+          <span style="color:var(--text); display:flex; align-items:center; gap:6px;"><span class="material-icons-round" style="color:var(--success); font-size:16px;">image_search</span> Görsel Analizleri</span>
+          <span style="font-weight:600;"><%= Math.round((img/tot)*100) %>%</span>
+        </div>
+        <div class="progress"><div class="progress-fill" style="width: <%= Math.round((img/tot)*100) %>%; background:var(--success);"></div></div>
+      </div>
+
+      <div style="margin-bottom:8px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.85rem;">
+          <span style="color:var(--text); display:flex; align-items:center; gap:6px;"><span class="material-icons-round" style="color:#fdd663; font-size:16px;">description</span> Dosya Analizleri</span>
+          <span style="font-weight:600;"><%= Math.round((doc/tot)*100) %>%</span>
+        </div>
+        <div class="progress"><div class="progress-fill" style="width: <%= Math.round((doc/tot)*100) %>%; background:#fdd663;"></div></div>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+      <!-- Total Users (Luna Accounts) -->
+      <div class="card" style="text-align:center;">
+        <span class="material-icons-round" style="font-size:36px; color:var(--accent); margin-bottom:12px;">group</span>
+        <h4 style="font-size:1.1rem; font-weight:600; margin-bottom:4px;"><%= db.users ? db.users.length : 0 %></h4>
+        <p style="font-size:0.85rem; color:var(--text-2);">Kayıtlı Luna Hesabı</p>
+      </div>
+
+      <div class="card" style="text-align:center;">
+        <span class="material-icons-round" style="font-size:36px; color:var(--accent-purple); margin-bottom:12px;">storage</span>
+        <h4 style="font-size:1.1rem; font-weight:600; margin-bottom:4px;"><%= db.conversations ? db.conversations.length : 0 %></h4>
+        <p style="font-size:0.85rem; color:var(--text-2);">Aktif Sohbet İpliği</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

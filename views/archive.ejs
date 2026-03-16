@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Dosya Arşivi</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'archive'}) %>
+  <div class="page-content">
+    <h1 class="page-title">Dosya Arşivi</h1>
+    <p class="page-subtitle">Şimdiye kadar analiz edilen tüm görsel ve belgeler</p>
+
+    <% 
+      const images = files.filter(f => f.type === 'image');
+      const docs = files.filter(f => f.type === 'text');
+    %>
+
+    <div class="card" style="margin-bottom:24px;">
+      <h3 class="card-title">Görseller (<%= images.length %>)</h3>
+      <% if (images.length === 0) { %>
+        <p style="color:var(--text-3); font-size:0.9rem;">Henüz görsel yüklenmedi.</p>
+      <% } else { %>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:12px;">
+          <% images.forEach(img => { %>
+            <div style="position:relative; width:100%; padding-top:100%; border-radius:var(--radius-md); overflow:hidden; border:1px solid var(--border);">
+              <img src="<%= img.path %>" alt="<%= img.name %>" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover;">
+              <div style="position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.7); padding:4px 8px; font-size:0.75rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="<%= img.name %>">
+                <%= img.name %>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+    </div>
+
+    <div class="card">
+      <h3 class="card-title">Belgeler ve Kod Dosyaları (<%= docs.length %>)</h3>
+      <% if (docs.length === 0) { %>
+        <p style="color:var(--text-3); font-size:0.9rem;">Henüz dosya yüklenmedi.</p>
+      <% } else { %>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Dosya Adı</th>
+                <th>Boyut</th>
+                <th>Tarih</th>
+                <th>İndir</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% docs.forEach(doc => { %>
+                <tr>
+                  <td style="display:flex; align-items:center; gap:8px;">
+                    <span class="material-icons-round" style="color:var(--text-3);">description</span>
+                    <%= doc.name %>
+                  </td>
+                  <td><%= (doc.size / 1024).toFixed(1) %> KB</td>
+                  <td style="color:var(--text-2);"><%= new Date(doc.uploadedAt).toLocaleString('tr-TR') %></td>
+                  <td>
+                    <a href="<%= doc.path %>" download class="btn-icon"><span class="material-icons-round" style="font-size:16px;">download</span></a>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+</body>
+</html>

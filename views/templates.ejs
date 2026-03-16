@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Şablonlar</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'explore'}) %>
+  <div class="page-content" style="max-width: 1000px;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:24px;">
+      <div>
+        <h1 class="page-title">Prompt Şablonları</h1>
+        <p class="page-subtitle" style="margin-bottom:0;">Sıklıkla kullanılan görevler için hazır yapılar</p>
+      </div>
+      <a href="/playground" class="btn btn-outline btn-sm"><span class="material-icons-round" style="font-size:16px;">science</span> Yeni Oluştur (Playground)</a>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
+      
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+          <h3 style="font-size:1.1rem; font-weight:600;">Kod İnceleyici</h3>
+          <span class="material-icons-round" style="color:#fdd663;">code</span>
+        </div>
+        <p style="color:var(--text-2); font-size:0.9rem; margin-bottom:16px; min-height:40px; line-height:1.5;">Yazdığım kodu incele, güvenlik açıkları ile performans darboğazlarını bul ve nasıl daha iyi yazılabileceğini örnekleyerek anlat.</p>
+        <button class="btn btn-tonal" style="width:100%; justify-content:center;" onclick="copyTemplate(this, 'Yazdığım kodu incele, güvenlik açıkları ile performans darboğazlarını bul ve nasıl daha iyi yazılabileceğini örnekleyerek anlat.')">
+          <span class="material-icons-round">content_copy</span> Kopyala
+        </button>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+          <h3 style="font-size:1.1rem; font-weight:600;">Makale Editörü</h3>
+          <span class="material-icons-round" style="color:var(--accent-purple);">edit_document</span>
+        </div>
+        <p style="color:var(--text-2); font-size:0.9rem; margin-bottom:16px; min-height:40px; line-height:1.5;">Aynı anlamı koruyarak bu metni daha profesyonel ve etkileyici bir kurumsal tona dönüştür. İmla hatalarını gider.</p>
+        <button class="btn btn-tonal" style="width:100%; justify-content:center;" onclick="copyTemplate(this, 'Aynı anlamı koruyarak bu metni daha profesyonel ve etkileyici bir kurumsal tona dönüştür. İmla hatalarını gider.')">
+          <span class="material-icons-round">content_copy</span> Kopyala
+        </button>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+          <h3 style="font-size:1.1rem; font-weight:600;">Gelişmiş Çevirmen</h3>
+          <span class="material-icons-round" style="color:var(--accent);">translate</span>
+        </div>
+        <p style="color:var(--text-2); font-size:0.9rem; margin-bottom:16px; min-height:40px; line-height:1.5;">Aşağıdaki metni Türkçeye/İngilizceye sadece kelimesi kelimesine değil, anlamsal kültürünü koruyarak çevir.</p>
+        <button class="btn btn-tonal" style="width:100%; justify-content:center;" onclick="copyTemplate(this, 'Aşağıdaki metni Türkçeye/İngilizceye sadece kelimesi kelimesine değil, anlamsal kültürünü koruyarak çevir.')">
+          <span class="material-icons-round">content_copy</span> Kopyala
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<div class="toast-container" id="toastContainer"></div>
+<script>
+function copyTemplate(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.innerHTML = `<span class="material-icons-round">check</span> Kopyalandı`;
+    btn.classList.add('btn-success');
+    setTimeout(() => {
+      btn.innerHTML = `<span class="material-icons-round">content_copy</span> Kopyala`;
+      btn.classList.remove('btn-success');
+    }, 2000);
+  });
+}
+function showToast(msg) {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+  c.appendChild(t); setTimeout(() => t.remove(), 3000);
+}
+</script>
+</body>
+</html>

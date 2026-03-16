@@ -1,0 +1,72 @@
+<!-- Luna AI Shared Sidebar Partial -->
+<% 
+  const navItems = [
+    { href: '/chat', icon: 'chat', label: 'Sohbet' },
+    { href: '/vision', icon: 'image_search', label: 'Görsel Analiz' },
+    { href: '/code', icon: 'code', label: 'Kod Editörü' },
+    { href: '/history', icon: 'history', label: 'Geçmiş' },
+    { href: '/archive', icon: 'folder', label: 'Arşiv' },
+    { href: '/stats', icon: 'bar_chart', label: 'İstatistikler' },
+    { href: '/admin', icon: 'admin_panel_settings', label: 'Admin' },
+    { href: '/about', icon: 'info', label: 'Hakkında' },
+    { href: '/settings', icon: 'settings', label: 'Ayarlar' },
+  ];
+%>
+<nav style="background:var(--sidebar-bg); border-right:1px solid var(--border); width:var(--sidebar-width); height:100vh; position:sticky; top:0; display:flex; flex-direction:column; overflow:hidden; flex-shrink:0;">
+  <!-- Logo -->
+  <div style="padding:12px 8px 4px;">
+    <a href="/" style="display:flex; align-items:center; gap:8px; padding:8px 12px; text-decoration:none; border-radius:var(--radius-md);">
+      <img src="https://i.imgur.com/X4GG8BF.png" alt="Luna" style="width:32px; height:32px; border-radius:8px;" onerror="this.style.display='none'">
+      <span style="font-weight:700; color:var(--text); font-size:1rem;">Luna AI</span>
+    </a>
+  </div>
+
+  <!-- Nav Items -->
+  <ul style="list-style:none; padding:4px 8px; flex:1; overflow-y:auto;">
+    <% navItems.forEach(item => { %>
+    <li>
+      <a href="<%= item.href %>" style="display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:var(--radius-full); text-decoration:none; color:<%= active === item.href.substring(1) ? 'var(--text)' : 'var(--text-2)' %>; background:<%= active === item.href.substring(1) ? 'var(--surface-hover)' : 'transparent' %>; font-size:0.88rem; font-weight:500; transition:var(--transition);" onmouseover="this.style.background='var(--surface-hover)'; this.style.color='var(--text)'" onmouseout="this.style.background='<%= active === item.href.substring(1) ? 'var(--surface-hover)' : 'transparent' %>'; this.style.color='<%= active === item.href.substring(1) ? 'var(--text)' : 'var(--text-2)' %>'">
+        <span class="material-icons-round" style="font-size:18px;"><%= item.icon %></span>
+        <%= item.label %>
+      </a>
+    </li>
+    <% }); %>
+  </ul>
+
+  <!-- User Profile -->
+  <% if (typeof user !== 'undefined' && user) { %>
+  <div style="padding:8px; border-top:1px solid var(--border);">
+    <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:var(--radius-md);">
+      <div class="avatar avatar-initials" style="width:32px; height:32px; font-size:0.78rem;">
+        <% if (user.profilePhoto) { %><img src="<%= user.profilePhoto %>" alt=""><% } else { %><%= (user.firstName[0]+user.lastName[0]).toUpperCase() %><% } %>
+      </div>
+      <div style="flex:1; min-width:0;">
+        <p style="font-size:0.82rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><%= user.firstName %></p>
+        <p style="font-size:0.72rem; color:var(--text-2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><%= user.email %></p>
+      </div>
+      <form action="/api/auth/logout" method="POST">
+        <button type="submit" class="btn-icon" title="Çıkış"><span class="material-icons-round" style="font-size:18px; color:var(--text-2);">logout</span></button>
+      </form>
+    </div>
+  </div>
+  <% } %>
+</nav>
+
+<!-- Security Script (Disable Right Click & DevTools) -->
+<script>
+  document.addEventListener('contextmenu', event => event.preventDefault());
+  document.addEventListener('keydown', event => {
+    if (event.keyCode === 123) { // F12
+      event.preventDefault();
+      return false;
+    }
+    if (event.ctrlKey && event.shiftKey && (event.keyCode === 73 || event.keyCode === 74)) { // Ctrl+Shift+I or J
+      event.preventDefault();
+      return false;
+    }
+    if (event.ctrlKey && event.keyCode === 85) { // Ctrl+U
+      event.preventDefault();
+      return false;
+    }
+  });
+</script>

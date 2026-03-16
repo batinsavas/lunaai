@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Görünüm</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="toast-container" id="toastContainer"></div>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'settings'}) %>
+  <div class="page-content" style="max-width: 800px;">
+    <h1 class="page-title">Görünüm ve Tema</h1>
+    <p class="page-subtitle">Arayüzü kendi zevkinize göre kişiselleştirin</p>
+
+    <!-- Theme Modes -->
+    <div class="settings-section">
+      <h3 class="settings-title">Tema Modu</h3>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:16px;">
+        
+        <div class="card" style="border:2px solid var(--accent-purple); cursor:pointer;" onclick="setTheme('dark')">
+          <div style="height:100px; background:#131314; border-radius:8px; margin-bottom:12px; display:flex; flex-direction:column; padding:12px; gap:8px;">
+            <div style="height:12px; width:40%; background:var(--surface-2); border-radius:4px;"></div>
+            <div style="height:40px; background:var(--surface); border-radius:8px;"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h4 style="font-weight:600;">Koyu Tema</h4>
+            <span class="material-icons-round" style="color:var(--accent-purple);">check_circle</span>
+          </div>
+        </div>
+
+        <div class="card" style="opacity:0.6; cursor:not-allowed;" title="Sadece Koyu Tema desteklenmektedir.">
+          <div style="height:100px; background:#f0f0f0; border-radius:8px; margin-bottom:12px; display:flex; flex-direction:column; padding:12px; gap:8px;">
+            <div style="height:12px; width:40%; background:#dcdcdc; border-radius:4px;"></div>
+            <div style="height:40px; background:#ffffff; border-radius:8px;"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h4 style="font-weight:600; color:#555;">Açık Tema (Yakında)</h4>
+            <span class="material-icons-round" style="color:var(--text-3);">radio_button_unchecked</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Accent Color -->
+    <div class="settings-section">
+      <h3 class="settings-title">Vurgu Rengi</h3>
+      <div class="card">
+        <p style="color:var(--text-2); font-size:0.9rem; margin-bottom:16px;">Butonlar, bağlantılar ve aktif durumlar için kullanılacak ana rengi seçin.</p>
+        <div style="display:flex; gap:16px; flex-wrap:wrap;">
+          
+          <button class="btn-icon" style="width:48px; height:48px; background:#a78bfa; border:2px solid #fff;" title="Mor (Varsayılan)" onclick="setAccent('#a78bfa')">
+            <span class="material-icons-round" style="color:#fff;">check</span>
+          </button>
+          <button class="btn-icon" style="width:48px; height:48px; background:#8ab4f8; opacity:0.8;" title="Mavi" onclick="showToast('Renk seçenekleri geliştirme aşamasındadır.')"></button>
+          <button class="btn-icon" style="width:48px; height:48px; background:#81c995; opacity:0.8;" title="Yeşil" onclick="showToast('Renk seçenekleri geliştirme aşamasındadır.')"></button>
+          <button class="btn-icon" style="width:48px; height:48px; background:#f28b82; opacity:0.8;" title="Kırmızı" onclick="showToast('Renk seçenekleri geliştirme aşamasındadır.')"></button>
+          <button class="btn-icon" style="width:48px; height:48px; background:#fdd663; opacity:0.8;" title="Sarı" onclick="showToast('Renk seçenekleri geliştirme aşamasındadır.')"></button>
+
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+<script>
+function setTheme(m) { showToast('Tema değiştirildi: ' + m); }
+function setAccent(c) { showToast('Vurgu rengi uygulandı.'); }
+function showToast(msg) {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+  c.appendChild(t); setTimeout(() => t.remove(), 3000);
+}
+</script>
+</body>
+</html>

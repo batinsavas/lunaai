@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Ayarlar</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="page-layout">
+  <!-- Sidebar -->
+  <aside class="page-sidebar">
+    <div style="padding:12px 8px;">
+      <a href="/chat" class="sidebar-logo"><img src="https://i.imgur.com/X4GG8BF.png" alt="Luna" style="width:32px;height:32px;border-radius:8px;"><span class="sidebar-logo-text">Luna AI</span></a>
+    </div>
+    <ul class="sidebar-nav" style="padding:8px;">
+      <li><a href="/chat" class="sidebar-nav-link"><span class="material-icons-round">chat</span> Sohbet</a></li>
+      <li><a href="/history" class="sidebar-nav-link"><span class="material-icons-round">history</span> Geçmiş</a></li>
+      <li><a href="/profile" class="sidebar-nav-link"><span class="material-icons-round">person</span> Profil</a></li>
+      <li><a href="/settings" class="sidebar-nav-link active"><span class="material-icons-round">settings</span> Ayarlar</a></li>
+      <li><a href="/security" class="sidebar-nav-link"><span class="material-icons-round">shield</span> Güvenlik</a></li>
+      <li><a href="/notifications" class="sidebar-nav-link"><span class="material-icons-round">notifications</span> Bildirimler</a></li>
+    </ul>
+    <div class="sidebar-footer">
+      <form action="/api/auth/logout" method="POST">
+        <button type="submit" class="sidebar-nav-link" style="border:none; cursor:pointer; color:var(--danger); background:none; font-family:inherit; width:100%; font-size:0.88rem;">
+          <span class="material-icons-round" style="font-size:18px;">logout</span> Çıkış Yap
+        </button>
+      </form>
+    </div>
+  </aside>
+
+  <!-- Content -->
+  <div class="page-content" style="max-width: 680px;">
+    <h1 class="page-title">Ayarlar</h1>
+    <p class="page-subtitle">Hesap ve platform tercihlerinizi yönetin</p>
+
+    <!-- Account Section -->
+    <div class="settings-section">
+      <div class="settings-title">Hesap</div>
+      <div class="card">
+        <!-- Profile Photo -->
+        <div style="display:flex; align-items:center; gap:20px; padding-bottom:20px; border-bottom:1px solid var(--border); margin-bottom:20px;">
+          <div style="position:relative;">
+            <div class="avatar avatar-initials avatar-lg" id="photoAvatar">
+              <% if (user && user.profilePhoto) { %>
+                <img src="<%= user.profilePhoto %>" alt="">
+              <% } else if (user) { %>
+                <%= (user.firstName[0] + user.lastName[0]).toUpperCase() %>
+              <% } %>
+            </div>
+            <label style="position:absolute; bottom:-4px; right:-4px; width:28px; height:28px; background:var(--accent-purple); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; border:2px solid var(--bg);">
+              <span class="material-icons-round" style="font-size:14px; color:white;">photo_camera</span>
+              <input type="file" id="photoInput" accept="image/*" style="display:none;" onchange="uploadPhoto(this)">
+            </label>
+          </div>
+          <div>
+            <p style="font-weight:700; font-size:1rem;"><%= user ? user.firstName + ' ' + user.lastName : '' %></p>
+            <p style="font-size:0.85rem; color:var(--text-2);"><%= user ? user.email : '' %></p>
+            <p style="font-size:0.75rem; color:var(--text-3); margin-top:4px;">Luna Accounts</p>
+          </div>
+        </div>
+
+        <!-- Edit Profile -->
+        <form id="profileForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">İsim</label>
+              <input type="text" class="form-input" id="pFirstName" value="<%= user ? user.firstName : '' %>">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Soyisim</label>
+              <input type="text" class="form-input" id="pLastName" value="<%= user ? user.lastName : '' %>">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-filled btn-sm">Kaydet</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Password Section -->
+    <div class="settings-section">
+      <div class="settings-title">Şifre</div>
+      <div class="card">
+        <form id="pwdForm">
+          <div class="form-group">
+            <label class="form-label">Mevcut Şifre</label>
+            <input type="password" class="form-input" id="curPwd" placeholder="••••••••">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Yeni Şifre</label>
+            <input type="password" class="form-input" id="newPwd" placeholder="En az 6 karakter">
+          </div>
+          <button type="submit" class="btn btn-outline btn-sm">Şifreyi Değiştir</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Preferences -->
+    <div class="settings-section">
+      <div class="settings-title">Tercihler</div>
+      <div class="card">
+        <div class="toggle-row">
+          <div>
+            <p style="font-weight:500; margin-bottom:3px;">Animasyonlar</p>
+            <p style="font-size:0.8rem; color:var(--text-2);">Geçiş animasyonlarını etkinleştir</p>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" <%= settings.animationsEnabled !== false ? 'checked' : '' %> onchange="updateSetting('animationsEnabled', this.checked)">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <div>
+            <p style="font-weight:500; margin-bottom:3px;">Ses Efektleri</p>
+            <p style="font-size:0.8rem; color:var(--text-2);">Mesaj seslerini etkinleştir</p>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" <%= settings.soundEnabled ? 'checked' : '' %> onchange="updateSetting('soundEnabled', this.checked)">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+        <div class="toggle-row" style="border-bottom:none;">
+          <div>
+            <p style="font-weight:500; margin-bottom:3px;">Dil</p>
+            <p style="font-size:0.8rem; color:var(--text-2);">Uygulama dili</p>
+          </div>
+          <select class="form-select" style="width:130px;" onchange="updateSetting('language', this.value)">
+            <option value="tr" <%= settings.language === 'tr' ? 'selected' : '' %>>Türkçe</option>
+            <option value="en" <%= settings.language === 'en' ? 'selected' : '' %>>English</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="settings-section">
+      <div class="settings-title" style="color:var(--danger);">Tehlikeli Bölge</div>
+      <div class="card" style="border-color:rgba(242,139,130,0.15);">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <p style="font-weight:500; margin-bottom:3px;">Tüm Sohbetleri Sil</p>
+            <p style="font-size:0.8rem; color:var(--text-2);">Bu işlem geri alınamaz.</p>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="clearChats()">
+            <span class="material-icons-round" style="font-size:16px;">delete_sweep</span>
+            Temizle
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+async function updateSetting(key, val) {
+  await fetch('/api/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ [key]: val }) });
+  showToast('Ayar kaydedildi');
+}
+
+document.getElementById('profileForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const res = await fetch('/api/auth/profile', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ firstName: document.getElementById('pFirstName').value, lastName: document.getElementById('pLastName').value })
+  });
+  if ((await res.json()).success) { showToast('Profil güncellendi'); location.reload(); }
+  else showToast('Bir hata oluştu');
+});
+
+document.getElementById('pwdForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const res = await fetch('/api/auth/profile', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ currentPassword: document.getElementById('curPwd').value, newPassword: document.getElementById('newPwd').value })
+  });
+  const data = await res.json();
+  if (data.success) { showToast('Şifre güncellendi'); document.getElementById('pwdForm').reset(); }
+  else showToast(data.error || 'Bir hata oluştu');
+});
+
+async function uploadPhoto(input) {
+  const file = input.files[0]; if (!file) return;
+  const fd = new FormData(); fd.append('photo', file);
+  const res = await fetch('/api/auth/upload-photo', { method: 'POST', body: fd });
+  if ((await res.json()).success) { showToast('Fotoğraf güncellendi'); location.reload(); }
+}
+
+async function clearChats() {
+  if (!confirm('Tüm sohbetler silinsin mi?')) return;
+  await fetch('/api/conversations', { method: 'DELETE' });
+  showToast('Sohbetler silindi');
+}
+
+function showToast(msg) {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+  c.appendChild(t); setTimeout(() => t.remove(), 3000);
+}
+</script>
+</body>
+</html>

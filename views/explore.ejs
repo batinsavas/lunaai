@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Keşfet</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'explore'}) %>
+  <div class="page-content" style="max-width: 1000px;">
+    <h1 class="page-title">Keşfet</h1>
+    <p class="page-subtitle">Luna AI ekosistemindeki tüm modüller ve araçlar</p>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
+      
+      <!-- Core -->
+      <a href="/chat" class="card" style="text-decoration:none; display:flex; flex-direction:column; border:2px solid transparent; transition:var(--transition);" onmouseover="this.style.borderColor='var(--accent-purple)'" onmouseout="this.style.borderColor='transparent'">
+        <span class="material-icons-round" style="font-size:36px; color:var(--accent-purple); margin-bottom:12px;">forum</span>
+        <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:8px; color:var(--text);">Luna Sohbet</h3>
+        <p style="color:var(--text-2); font-size:0.9rem; line-height:1.5;">Gelişmiş LunaB1 modeli ile sınırsız, kesintisiz sohbet edin.</p>
+      </a>
+
+      <!-- Vision -->
+      <a href="/vision" class="card" style="text-decoration:none; display:flex; flex-direction:column; border:2px solid transparent; transition:var(--transition);" onmouseover="this.style.borderColor='var(--success)'" onmouseout="this.style.borderColor='transparent'">
+        <span class="material-icons-round" style="font-size:36px; color:var(--success); margin-bottom:12px;">image_search</span>
+        <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:8px; color:var(--text);">Görsel Analiz</h3>
+        <p style="color:var(--text-2); font-size:0.9rem; line-height:1.5;">Resim yükleyin, detaylarını ve bağlamını analiz ettirin.</p>
+      </a>
+
+      <!-- Code -->
+      <a href="/code" class="card" style="text-decoration:none; display:flex; flex-direction:column; border:2px solid transparent; transition:var(--transition);" onmouseover="this.style.borderColor='#fdd663'" onmouseout="this.style.borderColor='transparent'">
+        <span class="material-icons-round" style="font-size:36px; color:#fdd663; margin-bottom:12px;">terminal</span>
+        <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:8px; color:var(--text);">Kod Editörü</h3>
+        <p style="color:var(--text-2); font-size:0.9rem; line-height:1.5;">Mimari asistanınız ile onlarca dilde hatasız kodlar üretin.</p>
+      </a>
+
+      <!-- Voice -->
+      <a href="/voice" class="card" style="text-decoration:none; display:flex; flex-direction:column; border:2px solid transparent; transition:var(--transition);" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='transparent'">
+        <span class="material-icons-round" style="font-size:36px; color:var(--accent); margin-bottom:12px;">mic</span>
+        <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:8px; color:var(--text);">Sesli Asistan</h3>
+        <p style="color:var(--text-2); font-size:0.9rem; line-height:1.5;">Yazmakla uğraşmayın, doğrudan konuşarak yanıt alın.</p>
+      </a>
+
+      <!-- Integrations -->
+      <a href="/integrations" class="card" style="text-decoration:none; display:flex; flex-direction:column; border:2px solid transparent; transition:var(--transition);" onmouseover="this.style.borderColor='#8ab4f8'" onmouseout="this.style.borderColor='transparent'">
+        <span class="material-icons-round" style="font-size:36px; color:#8ab4f8; margin-bottom:12px;">extension</span>
+        <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:8px; color:var(--text);">Entegrasyonlar</h3>
+        <p style="color:var(--text-2); font-size:0.9rem; line-height:1.5;">Luna'yı Google Drive, Slack ve VS Code gibi diğer hizmetlere bağlayın (Yakında).</p>
+      </a>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

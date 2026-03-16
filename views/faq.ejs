@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Sık Sorulan Sorular</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'help'}) %>
+  <div class="page-content" style="max-width: 800px;">
+    <h1 class="page-title">Sıkça Sorulan Sorular</h1>
+    <p class="page-subtitle">Platformu en verimli şekilde kullanmak rehberler</p>
+
+    <!-- Q1 -->
+    <div class="card" style="margin-bottom:12px; cursor:pointer; padding:16px 20px;" onclick="this.querySelector('.faq-content').style.display = this.querySelector('.faq-content').style.display==='none'?'block':'none'; const i = this.querySelector('.material-icons-round'); i.textContent = i.textContent==='expand_more'?'expand_less':'expand_more';">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="font-size:1.05rem; font-weight:600; display:flex; align-items:center; gap:8px;">
+          <span class="material-icons-round" style="color:var(--accent);">help_outline</span>
+          Hangi modeli kullanıyor ve özellikleri neler?
+        </h3>
+        <span class="material-icons-round" style="color:var(--text-3); transition:transform 0.2s;">expand_more</span>
+      </div>
+      <div class="faq-content" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid var(--border); color:var(--text-2); font-size:0.95rem; line-height:1.6;">
+        Luna AI'ın köklerinde Batın Savaş liderliğindeki <span class="badge badge-purple" style="font-size:0.75rem;">LunaB1</span> modeli çalışmaktadır. Multimodal bir yapay zekadır; yani hem gelişmiş analizlerle sorularınıza cevap verebilir hem de kod ve resimleri anlayabilir. 
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="card" style="margin-bottom:12px; cursor:pointer; padding:16px 20px;" onclick="this.querySelector('.faq-content').style.display = this.querySelector('.faq-content').style.display==='none'?'block':'none'; const i = this.querySelector('.material-icons-round'); i.textContent = i.textContent==='expand_more'?'expand_less':'expand_more';">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="font-size:1.05rem; font-weight:600; display:flex; align-items:center; gap:8px;">
+          <span class="material-icons-round" style="color:var(--accent);">help_outline</span>
+          Dosyalarımı AI analiz ederken kaydediyor musunuz?
+        </h3>
+        <span class="material-icons-round" style="color:var(--text-3); transition:transform 0.2s;">expand_more</span>
+      </div>
+      <div class="faq-content" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid var(--border); color:var(--text-2); font-size:0.95rem; line-height:1.6;">
+        Evet. Sisteme yüklediğiniz dosya (resim, pdf, kod) öncelikle yerel <span style="font-family:monospace; color:var(--success);">/uploads</span> klasörüne kaydedilir ardından modele gönderilir. Geçmiş analizlerinizi "Dosya Arşivi" sayfasından görüntüleyebilir veya Ayarlar menüsünden tüm verileri silebilirsiniz.
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="card" style="margin-bottom:12px; cursor:pointer; padding:16px 20px;" onclick="this.querySelector('.faq-content').style.display = this.querySelector('.faq-content').style.display==='none'?'block':'none'; const i = this.querySelector('.material-icons-round'); i.textContent = i.textContent==='expand_more'?'expand_less':'expand_more';">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="font-size:1.05rem; font-weight:600; display:flex; align-items:center; gap:8px;">
+          <span class="material-icons-round" style="color:var(--accent);">help_outline</span>
+          Luna Accounts (Hesap Sistemi) nasıl çalışıyor?
+        </h3>
+        <span class="material-icons-round" style="color:var(--text-3); transition:transform 0.2s;">expand_more</span>
+      </div>
+      <div class="faq-content" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid var(--border); color:var(--text-2); font-size:0.95rem; line-height:1.6;">
+        Sistemi (Sohbet Özelliği vs.) kullanabilmek için güvenlik gereği hesabınızı yaratmanız şarttır. Kayıt olduğunuz an e-posta adresiniz sisteme hash'lenmiş(bcrypt) şifrenizle birlikte güvenli sekilde Node.js session (oturum) yönetimine düşer.
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

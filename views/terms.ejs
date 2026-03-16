@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Kullanım Koşulları</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'about'}) %>
+  <div class="page-content" style="max-width: 800px;">
+    <h1 class="page-title">Hizmet Şartları</h1>
+    <p class="page-subtitle">Platformu kullanırken kabul ettiğiniz kullanım koşulları</p>
+
+    <div class="card" style="margin-bottom:24px;">
+      <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+        <span class="material-icons-round" style="color:var(--accent);">gavel</span> Yasal Uyarı
+      </h3>
+      <p style="color:var(--text-2); font-size:0.95rem; line-height:1.7; margin-bottom:16px;">
+        Luna AI, yapay zeka modeli LunaB1 tabanlı deneysel bir araçtır. Sistem üretken AI kullandığı için, modelin ürettiği cevaplarda <b>doğruluk, kesinlik veya yasal geçerlilik</b> garantisi verilmez.
+      </p>
+
+      <div style="background:var(--surface-hover); border-left:4px solid var(--danger); padding:16px; margin-bottom:20px; border-radius:4px;">
+        <h4 style="font-size:0.95rem; font-weight:600; margin-bottom:6px; color:var(--danger);">Sorumluluk Reddi</h4>
+        <p style="color:var(--text-2); font-size:0.85rem; line-height:1.5;">Luna'nın ürettiği kod veya tıbbi/finansal/hukuki öneriler tamamen referans amaçlıdır. Profesyonel danışmanlık yerine geçmez ve oluşabilecek zararlardan LunaSoft sorumlu tutulamaz.</p>
+      </div>
+
+      <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:12px; color:var(--text);">Platformun Doğru Kullanımı</h3>
+      <ul style="padding-left:20px; color:var(--text-2); font-size:0.95rem; line-height:1.7; margin-bottom:16px;">
+        <li>Zararlı yazılım (malware) geliştirmek amacıyla AI'ın manipüle edilmesi yasaktır.</li>
+        <li>Telif hakkı içeren yasa dışı dokümanları analiz amacıyla yüklemeyiniz.</li>
+        <li>Bilinçli yapay zeka testleri dışında, bot hesaplar aracılığıyla API'a spam (Rate Limit ihlali) gönderimi ban sebebidir.</li>
+      </ul>
+      
+      <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:12px; color:var(--text);">Lisans & Haklar</h3>
+      <p style="color:var(--text-2); font-size:0.95rem; line-height:1.7;">Luna AI arayüz tasarımı, "LunaB1" marka ismi ve genel kod mimarisi LunaSoft'a ve Batın Savaş'a aittir. Kopyalanması veya izinsiz başka projelerde tamamen sunulması yasaktır.</p>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Sesli Asistan</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="toast-container" id="toastContainer"></div>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'chat'}) %>
+  <div class="page-content" style="max-width: 800px; display:flex; flex-direction:column; align-items:center; justify-content:center; height:calc(100vh - 80px);">
+
+    <div style="text-align:center; margin-bottom:40px;">
+      <h1 class="page-title">Sesli Asistan (Beta)</h1>
+      <p class="page-subtitle">Pürtelaş yazmak yerine mikrofonu kullanarak konuşun</p>
+    </div>
+
+    <div class="card" style="width:100%; max-width:500px; text-align:center; padding:60px 40px; position:relative; overflow:hidden;">
+      
+      <!-- Voice Ripple Effect -->
+      <div id="ripple" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:120px; height:120px; border-radius:50%; background:var(--accent-purple); opacity:0; pointer-events:none; transition:all 0.3s ease;"></div>
+
+      <button id="micBtn" style="position:relative; width:100px; height:100px; border-radius:50%; background:var(--surface-2); border:4px solid var(--border); box-shadow:var(--shadow-lg); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:var(--transition); z-index:2; margin:0 auto 24px;">
+        <span class="material-icons-round" id="micIcon" style="font-size:48px; color:var(--text-2);">mic_none</span>
+      </button>
+
+      <h3 id="statusText" style="font-size:1.2rem; font-weight:600; margin-bottom:12px;">Dinlemek için tıklayın</h3>
+      <p id="transcript" style="color:var(--text-2); font-size:0.95rem; line-height:1.6; min-height:60px;"></p>
+
+    </div>
+
+    <div id="resultBox" class="card md-content" style="width:100%; max-width:500px; margin-top:24px; display:none; border-color:var(--accent-purple); color:var(--text); padding:20px; max-height:200px; overflow-y:auto;">
+      <!-- Answer will appear here -->
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+const micBtn = document.getElementById('micBtn');
+const micIcon = document.getElementById('micIcon');
+const statusText = document.getElementById('statusText');
+const transcriptEl = document.getElementById('transcript');
+const resultBox = document.getElementById('resultBox');
+const ripple = document.getElementById('ripple');
+
+let isRecording = false;
+let recognition = null;
+let silenceTimer;
+
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+  const SpeechR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechR();
+  recognition.lang = 'tr-TR';
+  recognition.continuous = true;
+  recognition.interimResults = true;
+
+  recognition.onstart = () => {
+    isRecording = true;
+    micIcon.textContent = 'mic';
+    micIcon.style.color = 'white';
+    micBtn.style.borderColor = 'var(--accent-purple)';
+    micBtn.style.background = 'var(--accent-purple)';
+    ripple.style.opacity = '0.3';
+    ripple.style.transform = 'translate(-50%, -50%) scale(1.5)';
+    statusText.textContent = 'Sizi dinliyorum...';
+    transcriptEl.textContent = '';
+    resultBox.style.display = 'none';
+  };
+
+  recognition.onresult = (event) => {
+    clearTimeout(silenceTimer);
+    let interim = '';
+    let final = '';
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      if (event.results[i].isFinal) final += event.results[i][0].transcript;
+      else interim += event.results[i][0].transcript;
+    }
+    transcriptEl.innerHTML = `<span style="color:var(--text);">${final}</span><span style="color:var(--text-3);">${interim}</span>`;
+    
+    // Auto stop if silent for 3 seconds after speech
+    silenceTimer = setTimeout(() => {
+      if(isRecording) recognition.stop();
+    }, 3000);
+  };
+
+  recognition.onend = () => {
+    isRecording = false;
+    micIcon.textContent = 'mic_none';
+    micIcon.style.color = 'var(--text-2)';
+    micBtn.style.borderColor = 'var(--border)';
+    micBtn.style.background = 'var(--surface-2)';
+    ripple.style.opacity = '0';
+    ripple.style.transform = 'translate(-50%, -50%) scale(1)';
+    statusText.textContent = 'İşleniyor...';
+    clearTimeout(silenceTimer);
+    
+    const text = transcriptEl.textContent.trim();
+    if (text) {
+      sendToAPI(text);
+    } else {
+      statusText.textContent = 'Bir şey duyamadım, tekrar deneyin.';
+    }
+  };
+
+  recognition.onerror = (e) => {
+    statusText.textContent = 'Mikrofon hatası: ' + e.error;
+    isRecording = false;
+  };
+
+  micBtn.addEventListener('click', () => {
+    if (isRecording) { recognition.stop(); }
+    else { recognition.start(); }
+  });
+
+} else {
+  micBtn.disabled = true;
+  statusText.textContent = 'Tarayıcınız ses tanımayı desteklemiyor.';
+}
+
+async function sendToAPI(text) {
+  try {
+    const fd = new FormData();
+    fd.append('message', text + ' (kısa ve öz yanıt ver)');
+    fd.append('sessionId', 'voice-task');
+
+    const res = await fetch('/api/chat', { method: 'POST', body: fd });
+    const data = await res.json();
+    
+    if (data.success) {
+      statusText.textContent = 'Yanıt geldi';
+      resultBox.style.display = 'block';
+      resultBox.innerHTML = marked.parse(data.response);
+      
+      // Text-to-speech
+      if ('speechSynthesis' in window) {
+        const u = new SpeechSynthesisUtterance(data.response.replace(/[*#_`]/g, ''));
+        u.lang = 'tr-TR';
+        u.rate = 1.1;
+        window.speechSynthesis.speak(u);
+      }
+    } else {
+      statusText.textContent = 'Sunucu hata döndürdü.';
+    }
+  } catch(e) {
+    statusText.textContent = 'Bağlantı sorunu.';
+  }
+}
+</script>
+</body>
+</html>

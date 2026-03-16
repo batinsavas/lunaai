@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Sürüm Notları</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'about'}) %>
+  <div class="page-content" style="max-width: 800px;">
+    <h1 class="page-title">Sürüm Notları (Changelog)</h1>
+    <p class="page-subtitle">Platformdaki en son güncellemeler ve yenilikler</p>
+
+    <!-- Version 2.1.0 -->
+    <div style="position:relative; margin-left:14px; padding-left:24px; border-left:2px solid var(--accent-purple); padding-bottom:32px;">
+      <div style="position:absolute; left:-7px; top:0; width:12px; height:12px; background:var(--accent-purple); border-radius:50%; box-shadow:0 0 0 4px var(--bg);"></div>
+      
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+        <h2 style="font-size:1.3rem; font-weight:700;">v2.1.0 — Kararlı Sürüm</h2>
+        <span class="badge badge-purple">Yeni</span>
+      </div>
+      <p style="font-size:0.85rem; color:var(--text-3); margin-bottom:16px;">Yayınlanma: Mayıs 2026</p>
+      
+      <div class="card" style="border-left:none;">
+        <h4 style="font-size:0.95rem; font-weight:600; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+          <span class="material-icons-round" style="color:var(--success); font-size:18px;">add_circle</span> Yenilikler
+        </h4>
+        <ul style="padding-left:20px; color:var(--text-2); font-size:0.9rem; line-height:1.6; margin-bottom:16px;">
+          <li><b>Luna Accounts:</b> Tam şifreli kayıt, giriş ve profil yönetimi sistemi eklendi (<span style="font-family:monospace; font-size:0.8rem;">bcryptjs</span>, <span style="font-family:monospace; font-size:0.8rem;">express-session</span>).</li>
+          <li><b>Gemini UI Redesign:</b> Emojiler tamamen Google Material Icons ile değiştirildi. Tema koyu ve minimal bir yapıya geçirildi.</li>
+          <li><b>LunaB1 Modeli:</b> AI sistem talimatları yenilenerek model adı resmen "LunaB1" olarak güncellendi.</li>
+          <li><b>Avatar Sistemi:</b> Kullanıcılara profil fotoğrafı yükleme desteği ve baş harfle gösterim eklendi.</li>
+        </ul>
+
+        <h4 style="font-size:0.95rem; font-weight:600; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+          <span class="material-icons-round" style="color:var(--accent); font-size:18px;">build</span> İyileştirmeler
+        </h4>
+        <ul style="padding-left:20px; color:var(--text-2); font-size:0.9rem; line-height:1.6;">
+          <li>Dosya okuma sisteminin limitsiz bellek tüketimi (Buffer sızıntıları) düzeltildi.</li>
+          <li>Kullanıcı arayüzü geçiş animasyonları optimize edildi.</li>
+          <li>API hız limitleri aktif edildi (1 dakikada 30 istek).</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Version 1.0.0 -->
+    <div style="position:relative; margin-left:14px; padding-left:24px; border-left:2px solid var(--border);">
+      <div style="position:absolute; left:-7px; top:0; width:12px; height:12px; background:var(--border); border-radius:50%; box-shadow:0 0 0 4px var(--bg);"></div>
+      
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+        <h2 style="font-size:1.2rem; font-weight:600; color:var(--text-2);">v1.0.0 — İlk Çıkış</h2>
+      </div>
+      <p style="font-size:0.85rem; color:var(--text-3); margin-bottom:16px;">Yayınlanma: Nisan 2026</p>
+      
+      <div class="card" style="opacity:0.8;">
+        <ul style="padding-left:20px; color:var(--text-2); font-size:0.9rem; line-height:1.6;">
+          <li>Luna AI platformunun temelleri atıldı.</li>
+          <li>Node.js (Express) ve ejs altyapısı kuruldu.</li>
+          <li>Gemini altyapısı ile sohbet motoru entegre edildi.</li>
+          <li>JSON tabanlı veritabanı eklendi.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

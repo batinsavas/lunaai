@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Modeller</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'about'}) %>
+  <div class="page-content" style="max-width: 900px;">
+    <h1 class="page-title">Yapay Zeka Modelleri</h1>
+    <p class="page-subtitle">Luna AI'ın temelini oluşturan teknolojiler</p>
+
+    <div class="card" style="margin-bottom:24px; border:1px solid rgba(138,108,247,0.3); background:linear-gradient(135deg, rgba(138,108,247,0.05), rgba(147,197,253,0.05));">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <img src="https://i.imgur.com/X4GG8BF.png" alt="LunaB1" style="width:40px; height:40px; border-radius:10px;">
+          <div>
+            <h2 style="font-size:1.3rem; font-weight:700; color:var(--accent-purple);">LunaB1 (Aktif)</h2>
+            <p style="font-size:0.85rem; color:var(--text-2);">Çok modlu amiral gemisi modelimiz</p>
+          </div>
+        </div>
+        <span class="badge badge-purple"><span class="material-icons-round" style="font-size:14px;">check_circle</span> Sürüm 2.1</span>
+      </div>
+      <p style="color:var(--text); font-size:0.95rem; line-height:1.6; margin-bottom:20px;">
+        LunaB1, Batın Savaş tarafından özel olarak geliştirilmiş ve eğitilmiş yapay zeka modelidir. Hız, akıl yürütme ve çok modluluk (metin, kod, resim) yeteneklerini tek bir çekirdekte birleştirerek rakipsiz bir asistan deneyimi sunar.
+      </p>
+      
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
+        <div style="background:var(--surface); padding:12px; border-radius:var(--radius-md); border:1px solid var(--border);">
+          <span class="material-icons-round" style="color:var(--accent); font-size:24px; margin-bottom:8px;">speed</span>
+          <h4 style="font-size:0.95rem; margin-bottom:4px;">Yüksek Hız</h4>
+          <p style="font-size:0.8rem; color:var(--text-2); line-height:1.4;">Saniyeler içinde akıl yürütür ve uzun yanıtları optimize şekilde üretir.</p>
+        </div>
+        <div style="background:var(--surface); padding:12px; border-radius:var(--radius-md); border:1px solid var(--border);">
+          <span class="material-icons-round" style="color:var(--success); font-size:24px; margin-bottom:8px;">wallpaper</span>
+          <h4 style="font-size:0.95rem; margin-bottom:4px;">Görsel Anlayış</h4>
+          <p style="font-size:0.8rem; color:var(--text-2); line-height:1.4;">Metinlerin yanı sıra kompleks resimleri ve belgeleri ustaca analiz eder.</p>
+        </div>
+        <div style="background:var(--surface); padding:12px; border-radius:var(--radius-md); border:1px solid var(--border);">
+          <span class="material-icons-round" style="color:#fdd663; font-size:24px; margin-bottom:8px;">code</span>
+          <h4 style="font-size:0.95rem; margin-bottom:4px;">Kod Uzmanlığı</h4>
+          <p style="font-size:0.8rem; color:var(--text-2); line-height:1.4;">30'dan fazla dilde karmaşık sistem mimarileri yazabilir.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1.1rem; font-weight:600; margin-bottom:16px;">Gelecek Modeller</h3>
+    <div class="card" style="opacity:0.7;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <h4 style="font-size:1.05rem; font-weight:600; margin-bottom:4px;">LunaV2 (Geliştirme Aşamasında)</h4>
+          <p style="font-size:0.85rem; color:var(--text-2);">Genişletilmiş mantık ve sesli sentezleme yetenekleriyle.</p>
+        </div>
+        <span class="badge badge-blue">Yakında</span>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

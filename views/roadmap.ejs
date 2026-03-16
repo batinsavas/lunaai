@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Yol Haritası</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'about'}) %>
+  <div class="page-content" style="max-width: 800px;">
+    <h1 class="page-title">Yol Haritası</h1>
+    <p class="page-subtitle">Luna AI'ın gelecekteki gelişim planları</p>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+        <span class="material-icons-round" style="font-size:28px; color:var(--success);">check_circle</span>
+        <h3 style="font-size:1.1rem; font-weight:600;">Aşama 1: Temel Arayüz & Güvenlik</h3>
+      </div>
+      <p style="color:var(--text-2); font-size:0.9rem; margin-bottom:12px; padding-left:40px;">(Tamamlandı - Sürüm 2.1)</p>
+      <ul style="padding-left:60px; color:var(--text-2); font-size:0.9rem; line-height:1.6;">
+        <li>Luna Accounts kullanıcı sistemi (Kayıt/Giriş)</li>
+        <li>Material Icons ve Minimal Koyu Tema</li>
+        <li>LunaB1 Model Entegrasyonu</li>
+        <li>JSON veritabanında şifreli şifre saklama</li>
+      </ul>
+    </div>
+
+    <div class="card" style="margin-bottom:16px; border-color:rgba(138,108,247,0.4);">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+        <span class="material-icons-round" style="font-size:28px; color:var(--accent-purple);">motion_photos_on</span>
+        <h3 style="font-size:1.1rem; font-weight:600;">Aşama 2: Araçlar & Entegrasyonlar</h3>
+      </div>
+      <p style="color:var(--accent); font-size:0.9rem; margin-bottom:12px; padding-left:40px;">(Aktif Geliştirme)</p>
+      <ul style="padding-left:60px; color:var(--text-2); font-size:0.9rem; line-height:1.6;">
+        <li>E-posta doğrulama sistemi (Nodemailer)</li>
+        <li>Google ve GitHub ile OAuth2 entegrasyonu</li>
+        <li>Eklenti (Plugin) market sistemi altyapısı</li>
+        <li>Daha gelişmiş döküman okuma (PDF OCR)</li>
+      </ul>
+    </div>
+
+    <div class="card" style="opacity:0.7;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+        <span class="material-icons-round" style="font-size:28px; color:var(--text-3);">schedule</span>
+        <h3 style="font-size:1.1rem; font-weight:600;">Aşama 3: LunaV2 Çekirdeği</h3>
+      </div>
+      <p style="color:var(--text-3); font-size:0.9rem; margin-bottom:12px; padding-left:40px;">(Planlanan Süreç)</p>
+      <ul style="padding-left:60px; color:var(--text-3); font-size:0.9rem; line-height:1.6;">
+        <li>Gelişmiş bellek yönetimi (Uzun süreli hafıza)</li>
+        <li>Sesli konuşma motorunun akıcı hale gelmesi</li>
+        <li>Geliştiriciler için genel Luna API servisi</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</body>
+</html>

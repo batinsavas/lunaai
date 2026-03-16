@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — İstatistikler</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'stats'}) %>
+  <div class="page-content">
+    <h1 class="page-title">Sistem İstatistikleri</h1>
+    <p class="page-subtitle">Platform kullanım metrikleri</p>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <span class="material-icons-round" style="font-size:32px; color:var(--accent-purple);">forum</span>
+        <div class="stat-num"><%= stats.totalSessions || 0 %></div>
+        <div class="stat-label">Toplam Oturum</div>
+      </div>
+      <div class="stat-card">
+        <span class="material-icons-round" style="font-size:32px; color:var(--accent);">chat</span>
+        <div class="stat-num"><%= stats.totalMessages || 0 %></div>
+        <div class="stat-label">Toplam Mesaj</div>
+      </div>
+      <div class="stat-card">
+        <span class="material-icons-round" style="font-size:32px; color:var(--success);">image_search</span>
+        <div class="stat-num"><%= stats.totalImages || 0 %></div>
+        <div class="stat-label">İncelenen Görsel</div>
+      </div>
+      <div class="stat-card">
+        <span class="material-icons-round" style="font-size:32px; color:#fdd663;">description</span>
+        <div class="stat-num"><%= stats.totalFiles || 0 %></div>
+        <div class="stat-label">İncelenen Dosya</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 class="card-title">Platform Bilgileri</h3>
+      <div class="table-wrap">
+        <table>
+          <tbody>
+            <tr>
+              <td style="color:var(--text-2);">Model Sürümü</td>
+              <td><span class="badge badge-purple">LunaB1</span></td>
+            </tr>
+            <tr>
+              <td style="color:var(--text-2);">Aktif Kullanıcı Hesabı</td>
+              <td><b>Bağlantılı</b> (<%= user.email %>)</td>
+            </tr>
+            <tr>
+              <td style="color:var(--text-2);">Frontend Çerçevesi</td>
+              <td>EJS / Özel CSS</td>
+            </tr>
+            <tr>
+              <td style="color:var(--text-2);">Veritabanı</td>
+              <td>JSON Tabanlı (fs/lowdb)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

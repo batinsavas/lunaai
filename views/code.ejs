@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Kod Editörü</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body>
+<div class="toast-container" id="toastContainer"></div>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'code'}) %>
+  <div class="page-content" style="max-width:1400px; display:flex; flex-direction:column; height:calc(100vh - 80px);">
+    <div style="flex-shrink:0;">
+      <h1 class="page-title">Yapay Zeka Destekli Kod Editörü</h1>
+      <p class="page-subtitle">Projeleriniz için anında kod üretin, inceleyin ve test edin</p>
+    </div>
+
+    <div style="display:flex; gap:20px; flex:1; min-height:0;">
+      
+      <!-- Generator Panel -->
+      <div class="card" style="width:400px; flex-shrink:0; display:flex; flex-direction:column; background:var(--surface-2);">
+        <h3 style="font-size:1rem; margin-bottom:16px;">Ne yapmak istersiniz?</h3>
+        
+        <div class="form-group">
+          <label class="form-label">Dil / Framework</label>
+          <select class="form-select" id="codeLang">
+            <option value="HTML/CSS/JS">HTML/CSS/JS (Web Varsa)</option>
+            <option value="Python">Python</option>
+            <option value="Node.js">Node.js (Express vb.)</option>
+            <option value="React">React (JSX)</option>
+            <option value="Java">Java</option>
+            <option value="C++">C++</option>
+            <option value="C#">C# / .NET</option>
+            <option value="Go">Go / Golang</option>
+            <option value="Diğer">Diğer</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="flex:1; display:flex; flex-direction:column;">
+          <label class="form-label">Detaylı Açıklama (Prompt)</label>
+          <textarea id="codePrompt" class="form-textarea" style="flex:1; resize:none;" placeholder="Örn: Bana ekranda zıplayan topları gösteren basit bir HTML oyunu tasarla..."></textarea>
+        </div>
+
+        <button class="btn btn-filled" id="generateBtn" style="width:100%; justify-content:center; padding:12px; margin-top:12px;">
+          <span class="material-icons-round">bolt</span> Kod Üret
+        </button>
+      </div>
+
+      <!-- Result Panel -->
+      <div class="card" style="flex:1; display:flex; flex-direction:column; padding:0; overflow:hidden;" id="resultWrapper">
+        <div style="padding:16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+          <h3 style="font-size:1rem; display:flex; align-items:center; gap:8px;">
+            <span class="material-icons-round" style="color:var(--success);">terminal</span>
+            Çıktı
+          </h3>
+          <div style="display:none;" id="actionBtns">
+            <button class="btn-icon" onclick="copyResult()" title="Tümünü Kopyala"><span class="material-icons-round" style="font-size:18px;">content_copy</span></button>
+          </div>
+        </div>
+        
+        <div id="resultContent" class="md-content" style="flex:1; overflow-y:auto; padding:20px; color:var(--text); line-height:1.6;">
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:var(--text-3); text-align:center;">
+            <span class="material-icons-round" style="font-size:48px; margin-bottom:12px; opacity:0.5;">code_off</span>
+            <p>Üretilen kodlar burada belirecek.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+marked.setOptions({breaks:true, gfm:true});
+
+const btn = document.getElementById('generateBtn');
+const resBox = document.getElementById('resultContent');
+const promptBox = document.getElementById('codePrompt');
+const langSel = document.getElementById('codeLang');
+
+let lastRawContent = '';
+
+btn.addEventListener('click', async () => {
+  const p = promptBox.value.trim();
+  if(!p) return;
+
+  btn.disabled = true;
+  btn.innerHTML = `<span class="material-icons-round">hourglass_empty</span> Üretiliyor...`;
+  resBox.innerHTML = `<div style="display:flex;align-items:center;gap:12px;color:var(--text-2);justify-content:center;height:100%;">
+    <span class="material-icons-round" style="animation:spin 2s linear infinite;">refresh</span> Kodlama yapılıyor...
+  </div>
+  <style>@keyframes spin { 100% { transform:rotate(360deg); } }</style>`;
+
+  const fullPrompt = `${langSel.value} dilinde kod yazmanı istiyorum.\n\nİstek: ${p}\n\nBolca açıklama satırı ekle ve sadece çözüm sağlayan net ve profesyonel kod gövdesini oluştur.`;
+
+  const fd = new FormData();
+  fd.append('message', fullPrompt);
+  fd.append('sessionId', 'code-task');
+
+  try {
+    const res = await fetch('/api/chat', { method:'POST', body:fd });
+    const data = await res.json();
+    if (data.success) {
+      lastRawContent = data.response;
+      resBox.innerHTML = marked.parse(data.response);
+      resBox.querySelectorAll('pre code').forEach(b => hljs.highlightElement(b));
+      // Custom copy buttons logic
+      document.getElementById('actionBtns').style.display = 'flex';
+      
+      // Auto-preview HTML
+      if (langSel.value === 'HTML/CSS/JS' && data.response.toLowerCase().includes('</html>')) {
+        showToast('HTML kodu üretildi. Sohbet sayfasındaki Canlı Önizleme butonunu kullanarak da test edebilirsiniz.');
+      }
+    } else {
+      resBox.innerHTML = `<div class="alert alert-error">Hata: ${data.error}</div>`;
+    }
+  } catch {
+    resBox.innerHTML = `<div class="alert alert-error">Sunucuya ulaşılamadı.</div>`;
+  }
+  btn.disabled = false;
+  btn.innerHTML = `<span class="material-icons-round">bolt</span> Kod Üret`;
+});
+
+function copyResult() {
+  if (lastRawContent) {
+    navigator.clipboard.writeText(lastRawContent).then(() => {
+      showToast('Kopyalandı');
+    });
+  }
+}
+
+function showToast(msg) {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+  c.appendChild(t); setTimeout(() => t.remove(), 3000);
+}
+</script>
+</body>
+</html>

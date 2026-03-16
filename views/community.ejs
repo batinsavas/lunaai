@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Topluluk</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'explore'}) %>
+  <div class="page-content" style="max-width: 900px;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:24px;">
+      <div>
+        <h1 class="page-title">Geliştirici Topluluğu</h1>
+        <p class="page-subtitle" style="margin-bottom:0;">Diğer Luna kullanıcılarıyla fikirlerinizi paylaşın</p>
+      </div>
+      <a href="https://github.com" target="_blank" class="btn btn-filled btn-sm"><span class="material-icons-round">forum</span> Tartışmalara Katıl</a>
+    </div>
+
+    <!-- Community Posts (Mock) -->
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      
+      <div class="card" style="padding:20px;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+          <div class="avatar avatar-initials" style="width:40px; height:40px; background:linear-gradient(135deg, #a78bfa, #8ab4f8);">AS</div>
+          <div>
+            <h4 style="font-size:0.95rem; font-weight:600;">Ahmet S.</h4>
+            <span style="font-size:0.8rem; color:var(--text-3);">2 gün önce • Luna API Kullanımı</span>
+          </div>
+        </div>
+        <p style="color:var(--text); font-size:0.95rem; line-height:1.6; margin-bottom:16px;">
+          Arkadaşlar, <code>/api/chat</code> endpoint'ine post atarken resim datasını doğrudan Base64 olarak formData içinde <code>file</code> anahtarına yerleştirirsek de çalışıyor mu? Yoksa Multer zorunlu mu?
+        </p>
+        <div style="display:flex; gap:16px; align-items:center;">
+          <span style="display:flex; align-items:center; gap:4px; font-size:0.85rem; color:var(--text-2); cursor:pointer;"><span class="material-icons-round" style="font-size:18px;">thumb_up</span> 12</span>
+          <span style="display:flex; align-items:center; gap:4px; font-size:0.85rem; color:var(--text-2); cursor:pointer;"><span class="material-icons-round" style="font-size:18px;">chat_bubble_outline</span> 3 Yanıt</span>
+        </div>
+      </div>
+
+      <div class="card" style="padding:20px;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+          <img src="https://i.imgur.com/X4GG8BF.png" alt="Luna" style="width:40px; height:40px; border-radius:50%; background:var(--surface-hover);">
+          <div>
+            <h4 style="font-size:0.95rem; font-weight:600; display:flex; align-items:center; gap:6px;">LunaSoft Destek <span class="material-icons-round" style="color:var(--accent); font-size:16px;">verified</span></h4>
+            <span style="font-size:0.8rem; color:var(--text-3);">1 hafta önce • Duyuru</span>
+          </div>
+        </div>
+        <p style="color:var(--text); font-size:0.95rem; line-height:1.6; margin-bottom:16px;">
+          Yeni LunaB1 sürümü yayında! Artık yapay zeka sadece metinleri değil görselleri de muazzam bir doğrulukla analiz ediyor. Tüm testçilere geri bildirimleri için teşekkür ederiz.
+        </p>
+        <div style="display:flex; gap:16px; align-items:center;">
+          <span style="display:flex; align-items:center; gap:4px; font-size:0.85rem; color:var(--text-2); cursor:pointer;"><span class="material-icons-round" style="font-size:18px; color:var(--accent-purple);">favorite</span> 128</span>
+          <span style="display:flex; align-items:center; gap:4px; font-size:0.85rem; color:var(--text-2); cursor:pointer;"><span class="material-icons-round" style="font-size:18px;">chat_bubble_outline</span> 42 Yanıt</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

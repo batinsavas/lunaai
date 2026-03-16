@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Eklentiler</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'explore'}) %>
+  <div class="page-content" style="max-width: 800px;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:24px;">
+      <div>
+        <h1 class="page-title">Eklentiler (Plugins)</h1>
+        <p class="page-subtitle" style="margin-bottom:0;">Luna AI çekirdeğini ek harici fonksiyonlarla genişletin</p>
+      </div>
+    </div>
+
+    <div class="alert alert-info" style="margin-bottom:24px;">
+      <span class="material-icons-round" style="margin-right:8px; font-size:24px;">info</span>
+      <div>
+        <h4 style="font-weight:600; margin-bottom:4px;">Geliştirilme Aşamasında</h4>
+        <p style="font-size:0.85rem; line-height:1.5;">Yapay zeka için eklenti ve fonksiyon çağırma (Function Calling) yetenekleri LunaV2 çekirdeğiyle birlikte aktif olacaktır. Şu anda gösterilenler planlanan örneklerdir.</p>
+      </div>
+    </div>
+
+    <!-- Plugins List -->
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      
+      <div class="card" style="display:flex; justify-content:space-between; align-items:center; opacity:0.6;">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div style="width:48px; height:48px; border-radius:12px; background:rgba(129,201,149,0.15); display:flex; align-items:center; justify-content:center;">
+            <span class="material-icons-round" style="color:var(--success); font-size:24px;">public</span>
+          </div>
+          <div>
+            <h3 style="font-size:1.05rem; font-weight:600; margin-bottom:4px;">Web Arama Asistanı</h3>
+            <p style="color:var(--text-2); font-size:0.85rem;">Luna'nın güncel bilgilere internet üzerinden erişmesine izin verir.</p>
+          </div>
+        </div>
+        <button class="btn btn-outline" disabled>Kur (Yakında)</button>
+      </div>
+
+      <div class="card" style="display:flex; justify-content:space-between; align-items:center; opacity:0.6;">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div style="width:48px; height:48px; border-radius:12px; background:rgba(253,214,99,0.15); display:flex; align-items:center; justify-content:center;">
+            <span class="material-icons-round" style="color:#fdd663; font-size:24px;">calculate</span>
+          </div>
+          <div>
+            <h3 style="font-size:1.05rem; font-weight:600; margin-bottom:4px;">Gelişmiş Matematik Motoru</h3>
+            <p style="color:var(--text-2); font-size:0.85rem;">Karmaşık formülleri Python yorumlayıcısı üzerinden çözümler.</p>
+          </div>
+        </div>
+        <button class="btn btn-outline" disabled>Kur (Yakında)</button>
+      </div>
+
+      <div class="card" style="display:flex; justify-content:space-between; align-items:center; opacity:0.6;">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div style="width:48px; height:48px; border-radius:12px; background:rgba(138,180,248,0.15); display:flex; align-items:center; justify-content:center;">
+            <span class="material-icons-round" style="color:var(--accent); font-size:24px;">image</span>
+          </div>
+          <div>
+            <h3 style="font-size:1.05rem; font-weight:600; margin-bottom:4px;">Resim Üretici (DALL-E)</h3>
+            <p style="color:var(--text-2); font-size:0.85rem;">Yazıdan resim üretme fonksiyonlarını Luna arayüzüne ekler.</p>
+          </div>
+        </div>
+        <button class="btn btn-outline" disabled>Kur (Yakında)</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

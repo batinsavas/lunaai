@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Geri Bildirim</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="toast-container" id="toastContainer"></div>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'feedback'}) %>
+  <div class="page-content" style="max-width: 600px;">
+    <h1 class="page-title">Geri Bildirim Gönder</h1>
+    <p class="page-subtitle">Luna AI'ı geliştirmemize yardımcı olun</p>
+
+    <div class="card">
+      <form id="feedbackForm">
+        <div class="form-group">
+          <label class="form-label">Değerlendirme</label>
+          <div style="display:flex; gap:8px;" id="starRater">
+            <span class="material-icons-round star-btn active" data-val="1">star</span>
+            <span class="material-icons-round star-btn active" data-val="2">star</span>
+            <span class="material-icons-round star-btn active" data-val="3">star</span>
+            <span class="material-icons-round star-btn active" data-val="4">star</span>
+            <span class="material-icons-round star-btn active" data-val="5">star</span>
+          </div>
+          <input type="hidden" id="ratingValue" value="5">
+          <style>
+            .star-btn { font-size:32px; color:var(--surface-hover); cursor:pointer; transition:var(--transition); }
+            .star-btn.active, .star-btn:hover { color:#fdd663; }
+          </style>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Konu Tipi</label>
+          <select class="form-select" id="feedbackType">
+            <option value="Hata Bildirimi">Hata Bildirimi</option>
+            <option value="Özellik İsteği">Özellik İsteği</option>
+            <option value="Tasarım/Arayüz">Tasarım/Arayüz</option>
+            <option value="Diğer">Diğer</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Mesajınız</label>
+          <textarea class="form-textarea" id="feedbackMessage" placeholder="Detaylı şekilde anlatın..." required rows="4"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-filled" style="width:100%; justify-content:center;">
+          <span class="material-icons-round">send</span> Gönder
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Stars logic
+  const stars = document.querySelectorAll('.star-btn');
+  const ratingInput = document.getElementById('ratingValue');
+  stars.forEach(s => {
+    s.addEventListener('click', () => {
+      const v = parseInt(s.dataset.val);
+      ratingInput.value = v;
+      stars.forEach((st, i) => {
+        if (i < v) st.classList.add('active');
+        else st.classList.remove('active');
+      });
+    });
+  });
+
+  // Submit Feedback
+  document.getElementById('feedbackForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button');
+    btn.disabled = true; btn.textContent = 'Gönderiliyor...';
+    try {
+      const res = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          rating: ratingInput.value,
+          type: document.getElementById('feedbackType').value,
+          message: document.getElementById('feedbackMessage').value
+        })
+      });
+      if ((await res.json()).success) {
+        showToast('Geri bildiriminiz alındı, teşekkürler!');
+        document.getElementById('feedbackForm').reset();
+        ratingInput.value = '5';
+        stars.forEach(s => s.classList.add('active'));
+      }
+    } catch { showToast('Bir hata oluştu.'); }
+    btn.disabled = false; btn.innerHTML = '<span class="material-icons-round">send</span> Gönder';
+  });
+
+function showToast(msg) {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+  c.appendChild(t); setTimeout(() => t.remove(), 3000);
+}
+</script>
+</body>
+</html>

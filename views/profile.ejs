@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Profil</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="toast-container" id="toastContainer"></div>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'profile'}) %>
+  <div class="page-content" style="max-width:600px;">
+    <h1 class="page-title">Profilim</h1>
+    <p class="page-subtitle">Luna Accounts — kişisel bilgilerinizi yönetin</p>
+
+    <div class="card" style="text-align:center; padding:40px; margin-bottom:24px;">
+      <div style="position:relative; display:inline-block; margin-bottom:20px;">
+        <div class="avatar avatar-initials avatar-lg" style="margin:0 auto;">
+          <% if (user && user.profilePhoto) { %>
+            <img src="<%= user.profilePhoto %>" alt="">
+          <% } else if (user) { %>
+            <%= (user.firstName[0]+user.lastName[0]).toUpperCase() %>
+          <% } %>
+        </div>
+        <label style="position:absolute; bottom:0; right:0; width:32px; height:32px; background:var(--accent-purple); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; border:2px solid var(--bg);">
+          <span class="material-icons-round" style="font-size:16px; color:white;">photo_camera</span>
+          <input type="file" accept="image/*" style="display:none;" onchange="uploadPhoto(this)">
+        </label>
+      </div>
+      <h2 style="font-size:1.4rem; font-weight:700; margin-bottom:4px;"><%= user ? user.firstName + ' ' + user.lastName : '' %></h2>
+      <p style="color:var(--text-2); font-size:0.9rem; margin-bottom:4px;"><%= user ? user.email : '' %></p>
+      <p style="font-size:0.75rem; color:var(--text-3);">Üye: <%= user && user.createdAt ? new Date(user.createdAt).toLocaleDateString('tr-TR') : '' %></p>
+    </div>
+
+    <div class="card">
+      <h3 class="card-title">Bilgileri Düzenle</h3>
+      <form id="editForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">İsim</label>
+            <input type="text" class="form-input" id="firstName" value="<%= user ? user.firstName : '' %>">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Soyisim</label>
+            <input type="text" class="form-input" id="lastName" value="<%= user ? user.lastName : '' %>">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-filled btn-sm">
+          <span class="material-icons-round" style="font-size:16px;">save</span>
+          Kaydet
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+document.getElementById('editForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const res = await fetch('/api/auth/profile', {
+    method:'PUT', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ firstName: document.getElementById('firstName').value, lastName: document.getElementById('lastName').value })
+  });
+  if((await res.json()).success) { showToast('Profil güncellendi'); location.reload(); }
+});
+async function uploadPhoto(input) {
+  const fd = new FormData(); fd.append('photo', input.files[0]);
+  const res = await fetch('/api/auth/upload-photo', {method:'POST', body:fd});
+  if((await res.json()).success) { showToast('Fotoğraf güncellendi'); location.reload(); }
+}
+function showToast(msg) { const c=document.getElementById('toastContainer'); const t=document.createElement('div'); t.className='toast'; t.textContent=msg; c.appendChild(t); setTimeout(()=>t.remove(),3000); }
+</script>
+</body>
+</html>

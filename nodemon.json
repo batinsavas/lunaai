@@ -1,0 +1,7 @@
+{
+  "ignore": [
+    "database.json",
+    "public/uploads/*",
+    "sessions/*"
+  ]
+}

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Beklenmeyen Hata</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body style="min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--bg); background-image:radial-gradient(circle at top, rgba(138,108,247,0.05) 0%, transparent 40%);">
+  <div class="card" style="width:100%; max-width:500px; text-align:center; padding:40px; border-top:4px solid var(--danger);">
+    <span class="material-icons-round" style="font-size:64px; color:var(--danger); margin-bottom:16px;">error_outline</span>
+    <h1 style="font-size:1.8rem; font-weight:800; margin-bottom:16px;">Sunucu Hatası (500)</h1>
+    
+    <% if (locals.message) { %>
+      <div class="alert alert-error" style="margin-bottom:24px; text-align:left;">
+        <%= message %>
+      </div>
+    <% } else { %>
+      <p style="color:var(--text-2); font-size:0.95rem; line-height:1.6; margin-bottom:24px;">LunaB1 motoru bu isteği işlerken beklenmeyen bir hata ile karşılaştı. Teknik ekip bilgilendirildi.</p>
+    <% } %>
+
+    <div style="display:flex; justify-content:center; gap:16px;">
+      <button class="btn btn-outline" onclick="window.history.back()">
+        <span class="material-icons-round">arrow_back</span> Geri Dön
+      </button>
+      <a href="/" class="btn btn-filled">
+        <span class="material-icons-round">home</span> Ana Sayfa
+      </a>
+    </div>
+  </div>
+</body>
+</html>

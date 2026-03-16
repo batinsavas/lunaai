@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luna AI — Admin Paneli</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+</head>
+<body>
+<div class="toast-container" id="toastContainer"></div>
+<div class="page-layout">
+  <%- include('partials/navbar', {active:'admin'}) %>
+  <div class="page-content">
+    <h1 class="page-title">Admin Paneli</h1>
+    <p class="page-subtitle">Sistem durumunu ve genel istatistikleri görüntüleyin</p>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <span class="material-icons-round" style="font-size:32px; color:var(--accent-purple);">forum</span>
+        <div class="stat-num"><%= stats.totalSessions || 0 %></div>
+        <div class="stat-label">Toplam Sohbet</div>
+      </div>
+      <div class="stat-card">
+        <span class="material-icons-round" style="font-size:32px; color:var(--accent);">chat</span>
+        <div class="stat-num"><%= stats.totalMessages || 0 %></div>
+        <div class="stat-label">Toplam Mesaj</div>
+      </div>
+      <div class="stat-card">
+        <span class="material-icons-round" style="font-size:32px; color:var(--success);">image_search</span>
+        <div class="stat-num"><%= stats.totalImages || 0 %></div>
+        <div class="stat-label">İncelenen Görsel</div>
+      </div>
+      <div class="stat-card">
+        <span class="material-icons-round" style="font-size:32px; color:#fdd663;">description</span>
+        <div class="stat-num"><%= stats.totalFiles || 0 %></div>
+        <div class="stat-label">İncelenen Dosya</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <h3 class="card-title">Sistem Durumu (API)</h3>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <p style="font-weight:500;">API Bağlantısı</p>
+          <p style="font-size:0.85rem; color:var(--text-2);">Model: LunaB1</p>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="checkHealth()" id="healthBtn">Durumu Kontrol Et</button>
+      </div>
+      <div id="healthResult" style="margin-top:14px; font-size:0.88rem; display:none;" class="alert"></div>
+    </div>
+
+    <div class="card">
+      <h3 class="card-title">Hızlı İşlemler</h3>
+      <div style="display:flex; gap:12px; flex-wrap:wrap;">
+        <button class="btn btn-danger" onclick="clearChats()">
+          <span class="material-icons-round">delete_sweep</span> Tüm Sohbetleri Temizle
+        </button>
+        <a href="/archive" class="btn btn-tonal">
+          <span class="material-icons-round">folder</span> Dosya Arşivi
+        </a>
+        <a href="/learning" class="btn btn-tonal">
+          <span class="material-icons-round">auto_stories</span> Öğrenme Günlüğü
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+async function checkHealth() {
+  const btn = document.getElementById('healthBtn');
+  const resEl = document.getElementById('healthResult');
+  btn.textContent = 'Kontrol ediliyor...';
+  btn.disabled = true;
+  resEl.style.display = 'none';
+  try {
+    const res = await fetch('/api/health');
+    const data = await res.json();
+    if(data.status === 'healthy') {
+      resEl.className = 'alert alert-info';
+      resEl.innerHTML = `<span class="material-icons-round">check_circle</span> <b>Bağlantı Başarılı:</b> LunaB1 Aktif (Uptime: ${Math.floor(data.uptime)}s)`;
+    } else {
+      resEl.className = 'alert alert-error';
+      resEl.innerHTML = `<span class="material-icons-round">error</span> <b>Bağlantı Hatası:</b> ${data.error}`;
+    }
+  } catch(e) {
+    resEl.className = 'alert alert-error';
+    resEl.innerHTML = `<span class="material-icons-round">error</span> <b>Sunucuya Ulaşılamadı</b>`;
+  }
+  btn.textContent = 'Durumu Kontrol Et';
+  btn.disabled = false;
+  resEl.style.display = 'flex';
+}
+
+async function clearChats() {
+  if(!confirm('Tüm veritabanı sohbetleri kalıcı olarak silinecek. Emin misiniz?')) return;
+  await fetch('/api/conversations', {method: 'DELETE'});
+  showToast('Tüm sohbetler silindi');
+  setTimeout(() => location.reload(), 1000);
+}
+
+function showToast(msg) {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+  c.appendChild(t); setTimeout(() => t.remove(), 3000);
+}
+</script>
+</body>
+</html>
