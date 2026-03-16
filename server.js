@@ -555,7 +555,7 @@ app.post('/api/chat', requireAuth, upload.single('file'), async (req, res) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        "model": req.body.isSearchMode === 'true' ? "llama-3.3-70b-versatile" : "meta-llama/llama-4-scout-17b-16e-instruct",
+        "model": req.body.isSearchMode === 'true' ? "qwen/qwen3-32b" : "qwen/qwen3-32b",
         "messages": openRouterMessages
       })
     });
