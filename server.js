@@ -22,8 +22,12 @@ const { OAuth2Client } = require('google-auth-library');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ─── API ANAHTARI ───────────────────────────────────────────
+// ─── API ANAHTARLARI ─────────────────────────────────────────
 const GROQ_API_KEY = process.env.GROQ_API_KEY || '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';
+// Text model (no vision)
+const GROQ_TEXT_MODEL = 'qwen/qwen3-32b';
+// Vision model — supports image_url content blocks
+const GROQ_VISION_MODEL = 'meta-llama/llama-4-scout-17b-16e-instruct';
 
 // ─── GOOGLE OAUTH YAPILANDIRMASI ────────────────────────────
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '860144765150-hjr30bmb1tc37lvmi5m97fgp3f8nl967.apps.googleusercontent.com';
@@ -653,6 +657,10 @@ app.post('/api/chat', requireAuth, upload.single('file'), async (req, res) => {
       });
     }
 
+    // Choose model: vision if image uploaded, text otherwise
+    const useVision = file && /\.(jpg|jpeg|png|gif|webp)$/i.test(file.originalname);
+    const chosenModel = useVision ? GROQ_VISION_MODEL : GROQ_TEXT_MODEL;
+
     const orFetch = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -660,8 +668,9 @@ app.post('/api/chat', requireAuth, upload.single('file'), async (req, res) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        "model": req.body.isSearchMode === 'true' ? "qwen/qwen3-32b" : "qwen/qwen3-32b",
-        "messages": openRouterMessages
+        "model": chosenModel,
+        "messages": openRouterMessages,
+        "max_tokens": useVision ? 4096 : 8192
       })
     });
 
@@ -690,13 +699,59 @@ app.post('/api/chat', requireAuth, upload.single('file'), async (req, res) => {
   }
 });
 
+// Ayarları Oku
+app.get('/api/settings', requireAuth, (req, res) => {
+  try {
+    const db = readDB();
+    res.json({ success: true, settings: db.settings || {} });
+  } catch { res.status(500).json({ success: false }); }
+});
+
 // Ayarlar Güncelle
 app.post('/api/settings', requireAuth, (req, res) => {
   try {
     const db = readDB();
     db.settings = { ...db.settings, ...req.body };
     writeDB(db);
-    res.json({ success: true });
+    res.json({ success: true, settings: db.settings });
+  } catch { res.status(500).json({ success: false }); }
+});
+
+// Sohbet Yeniden Adlandır
+app.put('/api/conversations/:id/rename', requireAuth, (req, res) => {
+  try {
+    const { title } = req.body;
+    const db = readDB();
+    const conv = db.conversations.find(c => c.id === req.params.id);
+    if (!conv) return res.status(404).json({ success: false, error: 'Sohbet bulunamadı.' });
+    conv.title = title ? title.trim().substring(0, 60) : conv.title;
+    conv.updatedAt = new Date().toISOString();
+    writeDB(db);
+    res.json({ success: true, title: conv.title });
+  } catch { res.status(500).json({ success: false }); }
+});
+
+// Sohbet Pinle/Kaldır
+app.put('/api/conversations/:id/pin', requireAuth, (req, res) => {
+  try {
+    const db = readDB();
+    const conv = db.conversations.find(c => c.id === req.params.id);
+    if (!conv) return res.status(404).json({ success: false });
+    conv.pinned = !conv.pinned;
+    conv.updatedAt = new Date().toISOString();
+    writeDB(db);
+    res.json({ success: true, pinned: conv.pinned });
+  } catch { res.status(500).json({ success: false }); }
+});
+
+// Kullanıcı İstatistikleri
+app.get('/api/user/stats', requireAuth, (req, res) => {
+  try {
+    const db = readDB();
+    const userId = req.session.userId;
+    const totalConversations = db.conversations.length;
+    const totalMessages = db.conversations.reduce((acc, c) => acc + (c.messages?.length || 0), 0);
+    res.json({ success: true, stats: { totalConversations, totalMessages, totalImages: db.stats?.totalImages || 0, totalFiles: db.stats?.totalFiles || 0 } });
   } catch { res.status(500).json({ success: false }); }
 });
 
