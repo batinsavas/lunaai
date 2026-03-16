@@ -185,9 +185,10 @@ app.get('/login', (req, res) => {
   res.render('login', { error: null });
 });
 
-// Register sayfası iptal, Login'e yönlendir
+// Register sayfası
 app.get('/register', (req, res) => {
-  res.redirect('/login');
+  if (req.session.userId) return res.redirect('/chat');
+  res.render('login', { error: null }); // login.ejs will handle both login and register
 });
 
 // ─── YENİ GOOGLE OAUTH ROTASI ──────────────────────────────
@@ -243,7 +244,83 @@ app.post('/api/auth/google', async (req, res) => {
 
   } catch (err) {
     console.error("Google Auth Hatası:", err);
-    res.json({ success: false, error: 'Google ile giriş yapılamadı.' });
+    res.status(401).json({ success: false, error: 'Google ile giriş yapılamadı. Lütfen tekrar deneyin.' });
+  }
+});
+
+// ─── YENİ E-POSTA AUTH ROTALARI ────────────────────────────
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { fullName, email, password, confirmPassword, birthDate } = req.body;
+
+    if (!fullName || !email || !password || !confirmPassword || !birthDate) {
+      return res.json({ success: false, error: 'Lütfen tüm alanları doldurun.' });
+    }
+
+    if (password !== confirmPassword) {
+      return res.json({ success: false, error: 'Şifreler birbiriyle eşleşmiyor.' });
+    }
+
+    const db = readDB();
+    const normalizedEmail = email.toLowerCase().trim();
+
+    if (db.users.find(u => u.email === normalizedEmail)) {
+      return res.json({ success: false, error: 'Bu e-posta adresi zaten kullanımda.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const nameParts = fullName.trim().split(' ');
+    const firstName = nameParts[0];
+    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+
+    const newUser = {
+      id: uuidv4(),
+      firstName,
+      lastName,
+      email: normalizedEmail,
+      password: hashedPassword,
+      birthDate,
+      profilePhoto: null,
+      createdAt: new Date().toISOString()
+    };
+
+    db.users.push(newUser);
+    writeDB(db);
+
+    req.session.userId = newUser.id;
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Kayıt Hatası:', err);
+    res.json({ success: false, error: 'Kayıt sırasında bir hata oluştu.' });
+  }
+});
+
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.json({ success: false, error: 'Lütfen e-posta ve şifrenizi girin.' });
+    }
+
+    const db = readDB();
+    const normalizedEmail = email.toLowerCase().trim();
+    const user = db.users.find(u => u.email === normalizedEmail);
+
+    if (!user || !user.password) {
+      return res.json({ success: false, error: 'Geçersiz e-posta veya şifre.' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.json({ success: false, error: 'Geçersiz e-posta veya şifre.' });
+    }
+
+    req.session.userId = user.id;
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Giriş Hatası:', err);
+    res.json({ success: false, error: 'Giriş sırasında bir hata oluştu.' });
   }
 });
 
