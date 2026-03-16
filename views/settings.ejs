@@ -1,10 +1,174 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" id="html-root">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Luna AI — Ayarlar</title>
   <link rel="stylesheet" href="/css/style.css">
   <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+  <style>
+    /* ── Settings-page extras ── */
+    .settings-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 4px;
+      border-radius: var(--radius-lg);
+    }
+    .stab {
+      flex: 1;
+      padding: 9px 14px;
+      border: none;
+      background: transparent;
+      color: var(--text-2);
+      font-family: 'Google Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .stab .material-icons-round { font-size: 16px; }
+    .stab.active {
+      background: var(--surface-2);
+      color: var(--text);
+      box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    }
+    .stab-panel { display: none; }
+    .stab-panel.active { display: block; }
+
+    /* Theme picker grid */
+    .theme-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .theme-card {
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: var(--transition);
+      font-size: 0.78rem;
+      color: var(--text-2);
+    }
+    .theme-card:hover { border-color: var(--accent-purple); color: var(--text); }
+    .theme-card.selected { border-color: var(--accent-purple); background: var(--accent-bg); color: var(--text); }
+    .theme-swatch {
+      width: 100%;
+      height: 46px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .swatch-light { background: #f5f5f5; border: 1px solid #e0e0e0; }
+    .swatch-dark  { background: #131314; }
+    .swatch-oled  { background: #000; }
+    .swatch-glass { background: linear-gradient(135deg, rgba(255,255,255,.12), rgba(138,108,247,.15)); border: 1px solid rgba(255,255,255,.15); }
+
+    /* Font-size picker */
+    .font-size-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .fsz-btn {
+      flex: 1;
+      padding: 10px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--text-2);
+      cursor: pointer;
+      font-family: 'Google Sans', sans-serif;
+      transition: var(--transition);
+      text-align: center;
+    }
+    .fsz-btn.selected { border-color: var(--accent-purple); color: var(--text); background: var(--accent-bg); }
+
+    /* Bubble style picker */
+    .bubble-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .bubble-card {
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.78rem;
+      color: var(--text-2);
+      text-align: center;
+    }
+    .bubble-card.selected { border-color: var(--accent-purple); background: var(--accent-bg); color: var(--text); }
+    .bubble-preview {
+      height: 40px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      background: var(--surface-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      color: var(--text-3);
+    }
+    .bubble-preview.minimal { background: transparent; border: 1px solid var(--border); }
+    .bubble-preview.compact { height: 28px; border-radius: 6px; }
+
+    /* Sidebar width */
+    .sw-row { display: flex; gap: 8px; margin-top: 12px; }
+    .sw-btn { flex:1; padding:10px; border:2px solid var(--border); border-radius:var(--radius-md); background:transparent; color:var(--text-2); cursor:pointer; font-family:'Google Sans',sans-serif; transition:var(--transition); text-align:center; font-size:0.82rem; }
+    .sw-btn.selected { border-color: var(--accent-purple); color:var(--text); background: var(--accent-bg); }
+
+    /* Stats cards */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .stat-card {
+      background: var(--surface-2);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      text-align: center;
+    }
+    .stat-num { font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+    .stat-lbl { font-size: 0.78rem; color: var(--text-2); margin-top: 4px; }
+
+    .kbd {
+      display: inline-block;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 7px;
+      font-size: 0.75rem;
+      font-family: 'Fira Code', monospace;
+      color: var(--text-2);
+    }
+    .shortcut-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.88rem;
+    }
+    .shortcut-row:last-child { border-bottom: none; }
+  </style>
 </head>
 <body>
 <div class="toast-container" id="toastContainer"></div>
@@ -22,10 +186,12 @@
       <li><a href="/settings" class="sidebar-nav-link active"><span class="material-icons-round">settings</span> Ayarlar</a></li>
       <li><a href="/security" class="sidebar-nav-link"><span class="material-icons-round">shield</span> Güvenlik</a></li>
       <li><a href="/notifications" class="sidebar-nav-link"><span class="material-icons-round">notifications</span> Bildirimler</a></li>
+      <li><a href="/vision" class="sidebar-nav-link"><span class="material-icons-round">image_search</span> Görsel Analiz</a></li>
+      <li><a href="/export" class="sidebar-nav-link"><span class="material-icons-round">download</span> Dışa Aktar</a></li>
     </ul>
     <div class="sidebar-footer">
       <form action="/api/auth/logout" method="POST">
-        <button type="submit" class="sidebar-nav-link" style="border:none; cursor:pointer; color:var(--danger); background:none; font-family:inherit; width:100%; font-size:0.88rem;">
+        <button type="submit" class="sidebar-nav-link" style="border:none;cursor:pointer;color:var(--danger);background:none;font-family:inherit;width:100%;font-size:0.88rem;">
           <span class="material-icons-round" style="font-size:18px;">logout</span> Çıkış Yap
         </button>
       </form>
@@ -33,134 +199,394 @@
   </aside>
 
   <!-- Content -->
-  <div class="page-content" style="max-width: 680px;">
+  <div class="page-content" style="max-width:720px;">
     <h1 class="page-title">Ayarlar</h1>
-    <p class="page-subtitle">Hesap ve platform tercihlerinizi yönetin</p>
+    <p class="page-subtitle">Hesap, görünüm ve platform tercihlerinizi yönetin</p>
 
-    <!-- Account Section -->
-    <div class="settings-section">
-      <div class="settings-title">Hesap</div>
-      <div class="card">
-        <!-- Profile Photo -->
-        <div style="display:flex; align-items:center; gap:20px; padding-bottom:20px; border-bottom:1px solid var(--border); margin-bottom:20px;">
-          <div style="position:relative;">
-            <div class="avatar avatar-initials avatar-lg" id="photoAvatar">
-              <% if (user && user.profilePhoto) { %>
-                <img src="<%= user.profilePhoto %>" alt="">
-              <% } else if (user) { %>
-                <%= (user.firstName[0] + user.lastName[0]).toUpperCase() %>
-              <% } %>
+    <!-- Tabs -->
+    <div class="settings-tabs">
+      <button class="stab active" onclick="switchTab('account',this)"><span class="material-icons-round">person</span> Hesap</button>
+      <button class="stab" onclick="switchTab('appearance',this)"><span class="material-icons-round">palette</span> Görünüm</button>
+      <button class="stab" onclick="switchTab('preferences',this)"><span class="material-icons-round">tune</span> Tercihler</button>
+      <button class="stab" onclick="switchTab('shortcuts',this)"><span class="material-icons-round">keyboard</span> Kısayollar</button>
+      <button class="stab" onclick="switchTab('stats',this)"><span class="material-icons-round">bar_chart</span> İstatistik</button>
+    </div>
+
+    <!-- ═══ ACCOUNT TAB ═══ -->
+    <div id="tab-account" class="stab-panel active">
+      <div class="settings-section">
+        <div class="settings-title">Profil</div>
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:20px;padding-bottom:20px;border-bottom:1px solid var(--border);margin-bottom:20px;">
+            <div style="position:relative;">
+              <div class="avatar avatar-initials avatar-lg" id="photoAvatar">
+                <% if (user && user.profilePhoto) { %>
+                  <img src="<%= user.profilePhoto %>" alt="">
+                <% } else if (user) { %>
+                  <%= (user.firstName[0] + user.lastName[0]).toUpperCase() %>
+                <% } %>
+              </div>
+              <label style="position:absolute;bottom:-4px;right:-4px;width:28px;height:28px;background:var(--accent-purple);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid var(--bg);">
+                <span class="material-icons-round" style="font-size:14px;color:white;">photo_camera</span>
+                <input type="file" id="photoInput" accept="image/*" style="display:none;" onchange="uploadPhoto(this)">
+              </label>
             </div>
-            <label style="position:absolute; bottom:-4px; right:-4px; width:28px; height:28px; background:var(--accent-purple); border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; border:2px solid var(--bg);">
-              <span class="material-icons-round" style="font-size:14px; color:white;">photo_camera</span>
-              <input type="file" id="photoInput" accept="image/*" style="display:none;" onchange="uploadPhoto(this)">
-            </label>
+            <div>
+              <p style="font-weight:700;font-size:1rem;"><%= user ? user.firstName + ' ' + user.lastName : '' %></p>
+              <p style="font-size:0.85rem;color:var(--text-2);"><%= user ? user.email : '' %></p>
+              <p style="font-size:0.75rem;color:var(--text-3);margin-top:4px;">Luna Accounts</p>
+            </div>
           </div>
-          <div>
-            <p style="font-weight:700; font-size:1rem;"><%= user ? user.firstName + ' ' + user.lastName : '' %></p>
-            <p style="font-size:0.85rem; color:var(--text-2);"><%= user ? user.email : '' %></p>
-            <p style="font-size:0.75rem; color:var(--text-3); margin-top:4px;">Luna Accounts</p>
-          </div>
+          <form id="profileForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">İsim</label>
+                <input type="text" class="form-input" id="pFirstName" value="<%= user ? user.firstName : '' %>">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Soyisim</label>
+                <input type="text" class="form-input" id="pLastName" value="<%= user ? user.lastName : '' %>">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-filled btn-sm">Kaydet</button>
+          </form>
         </div>
+      </div>
 
-        <!-- Edit Profile -->
-        <form id="profileForm">
-          <div class="form-row">
+      <div class="settings-section">
+        <div class="settings-title">Şifre</div>
+        <div class="card">
+          <form id="pwdForm">
             <div class="form-group">
-              <label class="form-label">İsim</label>
-              <input type="text" class="form-input" id="pFirstName" value="<%= user ? user.firstName : '' %>">
+              <label class="form-label">Mevcut Şifre</label>
+              <input type="password" class="form-input" id="curPwd" placeholder="••••••••">
             </div>
             <div class="form-group">
-              <label class="form-label">Soyisim</label>
-              <input type="text" class="form-input" id="pLastName" value="<%= user ? user.lastName : '' %>">
+              <label class="form-label">Yeni Şifre</label>
+              <input type="password" class="form-input" id="newPwd" placeholder="En az 6 karakter">
+            </div>
+            <button type="submit" class="btn btn-outline btn-sm">Şifreyi Değiştir</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title" style="color:var(--danger);">Tehlikeli Bölge</div>
+        <div class="card" style="border-color:rgba(242,139,130,.15);">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <p style="font-weight:500;margin-bottom:3px;">Tüm Sohbetleri Sil</p>
+              <p style="font-size:0.8rem;color:var(--text-2);">Bu işlem geri alınamaz.</p>
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="clearChats()">
+              <span class="material-icons-round" style="font-size:16px;">delete_sweep</span> Temizle
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ APPEARANCE TAB ═══ -->
+    <div id="tab-appearance" class="stab-panel">
+
+      <!-- Theme -->
+      <div class="settings-section">
+        <div class="settings-title">Tema</div>
+        <div class="card">
+          <p style="font-size:0.85rem;color:var(--text-2);margin-bottom:4px;">Sitenin renk temasını seçin. Varsayılan: <strong>Açık</strong></p>
+          <div class="theme-grid">
+            <div class="theme-card" id="tc-light" onclick="setTheme('light')">
+              <div class="theme-swatch swatch-light">☀️</div>
+              Açık
+            </div>
+            <div class="theme-card" id="tc-dark" onclick="setTheme('dark')">
+              <div class="theme-swatch swatch-dark">🌙</div>
+              Koyu
+            </div>
+            <div class="theme-card" id="tc-oled" onclick="setTheme('oled')">
+              <div class="theme-swatch swatch-oled">⬛</div>
+              OLED
+            </div>
+            <div class="theme-card" id="tc-glass" onclick="setTheme('glass')">
+              <div class="theme-swatch swatch-glass">🔮</div>
+              Cam
             </div>
           </div>
-          <button type="submit" class="btn btn-filled btn-sm">Kaydet</button>
-        </form>
+        </div>
+      </div>
+
+      <!-- Language -->
+      <div class="settings-section">
+        <div class="settings-title">Dil / Language</div>
+        <div class="card">
+          <div class="toggle-row" style="border-bottom:none;">
+            <div>
+              <p style="font-weight:500;margin-bottom:3px;">Uygulama Dili</p>
+              <p style="font-size:0.8rem;color:var(--text-2);">Arayüz dilini seçin</p>
+            </div>
+            <select class="form-select" style="width:160px;" id="langSelect" onchange="setLanguage(this.value)">
+              <option value="tr" <%= settings.language === 'tr' || !settings.language ? 'selected' : '' %>>🇹🇷 Türkçe</option>
+              <option value="en" <%= settings.language === 'en' ? 'selected' : '' %>>🇬🇧 English</option>
+              <option value="de" <%= settings.language === 'de' ? 'selected' : '' %>>🇩🇪 Deutsch</option>
+              <option value="fr" <%= settings.language === 'fr' ? 'selected' : '' %>>🇫🇷 Français</option>
+              <option value="es" <%= settings.language === 'es' ? 'selected' : '' %>>🇪🇸 Español</option>
+              <option value="ar" <%= settings.language === 'ar' ? 'selected' : '' %>>🇸🇦 العربية</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Font Size -->
+      <div class="settings-section">
+        <div class="settings-title">Yazı Boyutu</div>
+        <div class="card">
+          <p style="font-size:0.85rem;color:var(--text-2);">Sohbet metinlerinin boyutunu ayarlayın</p>
+          <div class="font-size-row">
+            <button class="fsz-btn" id="fsz-sm" onclick="setFontSize('sm')">
+              <div style="font-size:0.75rem;font-weight:700;">Aa</div>
+              <div style="font-size:0.72rem;margin-top:2px;">Küçük</div>
+            </button>
+            <button class="fsz-btn" id="fsz-md" onclick="setFontSize('md')">
+              <div style="font-size:1rem;font-weight:700;">Aa</div>
+              <div style="font-size:0.72rem;margin-top:2px;">Normal</div>
+            </button>
+            <button class="fsz-btn" id="fsz-lg" onclick="setFontSize('lg')">
+              <div style="font-size:1.25rem;font-weight:700;">Aa</div>
+              <div style="font-size:0.72rem;margin-top:2px;">Büyük</div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Bubble Style -->
+      <div class="settings-section">
+        <div class="settings-title">Mesaj Balonu Stili</div>
+        <div class="card">
+          <p style="font-size:0.85rem;color:var(--text-2);">Sohbet balonlarının görünümünü seçin</p>
+          <div class="bubble-grid">
+            <div class="bubble-card" id="bs-modern" onclick="setBubbleStyle('modern')">
+              <div class="bubble-preview">Merhaba!</div>
+              Modern
+            </div>
+            <div class="bubble-card" id="bs-minimal" onclick="setBubbleStyle('minimal')">
+              <div class="bubble-preview minimal">Merhaba!</div>
+              Minimal
+            </div>
+            <div class="bubble-card" id="bs-compact" onclick="setBubbleStyle('compact')">
+              <div class="bubble-preview compact">Hi!</div>
+              Kompakt
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar Width -->
+      <div class="settings-section">
+        <div class="settings-title">Kenar Çubuğu Genişliği</div>
+        <div class="card">
+          <div class="sw-row">
+            <button class="sw-btn" id="sw-sm" onclick="setSidebarWidth('sm')">Dar<br><small>200px</small></button>
+            <button class="sw-btn" id="sw-md" onclick="setSidebarWidth('md')">Normal<br><small>256px</small></button>
+            <button class="sw-btn" id="sw-lg" onclick="setSidebarWidth('lg')">Geniş<br><small>320px</small></button>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Password Section -->
-    <div class="settings-section">
-      <div class="settings-title">Şifre</div>
-      <div class="card">
-        <form id="pwdForm">
-          <div class="form-group">
-            <label class="form-label">Mevcut Şifre</label>
-            <input type="password" class="form-input" id="curPwd" placeholder="••••••••">
+    <!-- ═══ PREFERENCES TAB ═══ -->
+    <div id="tab-preferences" class="stab-panel">
+      <div class="settings-section">
+        <div class="settings-title">Genel Tercihler</div>
+        <div class="card">
+          <div class="toggle-row">
+            <div><p style="font-weight:500;margin-bottom:3px;">Animasyonlar</p><p style="font-size:0.8rem;color:var(--text-2);">Geçiş animasyonlarını etkinleştir</p></div>
+            <label class="toggle"><input type="checkbox" <%= settings.animationsEnabled !== false ? 'checked' : '' %> onchange="updateSetting('animationsEnabled', this.checked)"><span class="toggle-track"></span></label>
           </div>
-          <div class="form-group">
-            <label class="form-label">Yeni Şifre</label>
-            <input type="password" class="form-input" id="newPwd" placeholder="En az 6 karakter">
+          <div class="toggle-row">
+            <div><p style="font-weight:500;margin-bottom:3px;">Ses Efektleri</p><p style="font-size:0.8rem;color:var(--text-2);">Mesaj seslerini etkinleştir</p></div>
+            <label class="toggle"><input type="checkbox" <%= settings.soundEnabled ? 'checked' : '' %> onchange="updateSetting('soundEnabled', this.checked)"><span class="toggle-track"></span></label>
           </div>
-          <button type="submit" class="btn btn-outline btn-sm">Şifreyi Değiştir</button>
-        </form>
-      </div>
-    </div>
-
-    <!-- Preferences -->
-    <div class="settings-section">
-      <div class="settings-title">Tercihler</div>
-      <div class="card">
-        <div class="toggle-row">
-          <div>
-            <p style="font-weight:500; margin-bottom:3px;">Animasyonlar</p>
-            <p style="font-size:0.8rem; color:var(--text-2);">Geçiş animasyonlarını etkinleştir</p>
+          <div class="toggle-row">
+            <div><p style="font-weight:500;margin-bottom:3px;">Yazı Tipi Smoothing</p><p style="font-size:0.8rem;color:var(--text-2);">Antialiased font rendering</p></div>
+            <label class="toggle"><input type="checkbox" <%= settings.fontSmoothing !== false ? 'checked' : '' %> onchange="updateSetting('fontSmoothing', this.checked)"><span class="toggle-track"></span></label>
           </div>
-          <label class="toggle">
-            <input type="checkbox" <%= settings.animationsEnabled !== false ? 'checked' : '' %> onchange="updateSetting('animationsEnabled', this.checked)">
-            <span class="toggle-track"></span>
-          </label>
-        </div>
-        <div class="toggle-row">
-          <div>
-            <p style="font-weight:500; margin-bottom:3px;">Ses Efektleri</p>
-            <p style="font-size:0.8rem; color:var(--text-2);">Mesaj seslerini etkinleştir</p>
+          <div class="toggle-row">
+            <div><p style="font-weight:500;margin-bottom:3px;">Zaman Damgaları</p><p style="font-size:0.8rem;color:var(--text-2);">Mesajlarda saat göster</p></div>
+            <label class="toggle"><input type="checkbox" <%= settings.showTimestamps ? 'checked' : '' %> onchange="updateSetting('showTimestamps', this.checked)"><span class="toggle-track"></span></label>
           </div>
-          <label class="toggle">
-            <input type="checkbox" <%= settings.soundEnabled ? 'checked' : '' %> onchange="updateSetting('soundEnabled', this.checked)">
-            <span class="toggle-track"></span>
-          </label>
-        </div>
-        <div class="toggle-row" style="border-bottom:none;">
-          <div>
-            <p style="font-weight:500; margin-bottom:3px;">Dil</p>
-            <p style="font-size:0.8rem; color:var(--text-2);">Uygulama dili</p>
+          <div class="toggle-row">
+            <div><p style="font-weight:500;margin-bottom:3px;">Markdown Renderı</p><p style="font-size:0.8rem;color:var(--text-2);">Mesajları formatlanmış göster</p></div>
+            <label class="toggle"><input type="checkbox" <%= settings.markdownEnabled !== false ? 'checked' : '' %> onchange="updateSetting('markdownEnabled', this.checked)"><span class="toggle-track"></span></label>
           </div>
-          <select class="form-select" style="width:130px;" onchange="updateSetting('language', this.value)">
-            <option value="tr" <%= settings.language === 'tr' ? 'selected' : '' %>>Türkçe</option>
-            <option value="en" <%= settings.language === 'en' ? 'selected' : '' %>>English</option>
-          </select>
+          <div class="toggle-row">
+            <div><p style="font-weight:500;margin-bottom:3px;">Otomatik Sohbet Başlığı</p><p style="font-size:0.8rem;color:var(--text-2);">İlk mesajdan başlık türet</p></div>
+            <label class="toggle"><input type="checkbox" <%= settings.autoTitle !== false ? 'checked' : '' %> onchange="updateSetting('autoTitle', this.checked)"><span class="toggle-track"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div><p style="font-weight:500;margin-bottom:3px;">Mesaj Beğenileri</p><p style="font-size:0.8rem;color:var(--text-2);">👍👎 butonlarını göster</p></div>
+            <label class="toggle"><input type="checkbox" <%= settings.showReactions !== false ? 'checked' : '' %> onchange="updateSetting('showReactions', this.checked)"><span class="toggle-track"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div><p style="font-weight:500;margin-bottom:3px;">Taslak Otomatik Kayıt</p><p style="font-size:0.8rem;color:var(--text-2);">Yazılan mesajı sayfadan ayrılınca kaydet</p></div>
+            <label class="toggle"><input type="checkbox" <%= settings.autoDraft !== false ? 'checked' : '' %> onchange="updateSetting('autoDraft', this.checked)"><span class="toggle-track"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div><p style="font-weight:500;margin-bottom:3px;">Enter ile Gönder</p><p style="font-size:0.8rem;color:var(--text-2);">Enter → gönder, Shift+Enter → yeni satır</p></div>
+            <label class="toggle"><input type="checkbox" <%= settings.enterToSend !== false ? 'checked' : '' %> onchange="updateSetting('enterToSend', this.checked)"><span class="toggle-track"></span></label>
+          </div>
+          <div class="toggle-row" style="border-bottom:none;">
+            <div><p style="font-weight:500;margin-bottom:3px;">TTS Dili</p><p style="font-size:0.8rem;color:var(--text-2);">Sesli okuma dili</p></div>
+            <select class="form-select" style="width:130px;" onchange="updateSetting('ttsLang', this.value)">
+              <option value="tr-TR" <%= (settings.ttsLang || 'tr-TR') === 'tr-TR' ? 'selected' : '' %>>Türkçe</option>
+              <option value="en-US" <%= settings.ttsLang === 'en-US' ? 'selected' : '' %>>English</option>
+              <option value="de-DE" <%= settings.ttsLang === 'de-DE' ? 'selected' : '' %>>Deutsch</option>
+            </select>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Danger Zone -->
-    <div class="settings-section">
-      <div class="settings-title" style="color:var(--danger);">Tehlikeli Bölge</div>
-      <div class="card" style="border-color:rgba(242,139,130,0.15);">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <p style="font-weight:500; margin-bottom:3px;">Tüm Sohbetleri Sil</p>
-            <p style="font-size:0.8rem; color:var(--text-2);">Bu işlem geri alınamaz.</p>
-          </div>
-          <button class="btn btn-danger btn-sm" onclick="clearChats()">
-            <span class="material-icons-round" style="font-size:16px;">delete_sweep</span>
-            Temizle
-          </button>
+    <!-- ═══ SHORTCUTS TAB ═══ -->
+    <div id="tab-shortcuts" class="stab-panel">
+      <div class="settings-section">
+        <div class="settings-title">Klavye Kısayolları</div>
+        <div class="card">
+          <div class="shortcut-row"><span>Yeni sohbet</span><span><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">N</kbd></span></div>
+          <div class="shortcut-row"><span>Mesaj gönder</span><span><kbd class="kbd">Enter</kbd></span></div>
+          <div class="shortcut-row"><span>Yeni satır</span><span><kbd class="kbd">Shift</kbd> + <kbd class="kbd">Enter</kbd></span></div>
+          <div class="shortcut-row"><span>Kısayollar paneli</span><span><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">K</kbd></span></div>
+          <div class="shortcut-row"><span>Sohbet ara</span><span><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">F</kbd></span></div>
+          <div class="shortcut-row"><span>Sidebar gizle</span><span><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">B</kbd></span></div>
+          <div class="shortcut-row"><span>Odak modu</span><span><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">F</kbd></span></div>
+          <div class="shortcut-row"><span>Temayı değiştir</span><span><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">T</kbd></span></div>
+          <div class="shortcut-row"><span>Dışa aktar</span><span><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">Shift</kbd> + <kbd class="kbd">E</kbd></span></div>
+          <div class="shortcut-row"><span>Yapıştır (görsel)</span><span><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">V</kbd></span></div>
         </div>
       </div>
     </div>
 
-  </div>
-</div>
+    <!-- ═══ STATS TAB ═══ -->
+    <div id="tab-stats" class="stab-panel">
+      <div class="settings-section">
+        <div class="settings-title">Kullanım İstatistikleri</div>
+        <div class="card">
+          <div class="stat-grid" id="statsGrid">
+            <div class="stat-card"><div class="stat-num" id="st-convs">—</div><div class="stat-lbl">Toplam Sohbet</div></div>
+            <div class="stat-card"><div class="stat-num" id="st-msgs">—</div><div class="stat-lbl">Toplam Mesaj</div></div>
+            <div class="stat-card"><div class="stat-num" id="st-imgs">—</div><div class="stat-lbl">Yüklenen Görsel</div></div>
+            <div class="stat-card"><div class="stat-num" id="st-files">—</div><div class="stat-lbl">Yüklenen Dosya</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page-content -->
+</div><!-- /page-layout -->
 
 <script>
-async function updateSetting(key, val) {
-  await fetch('/api/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ [key]: val }) });
-  showToast('Ayar kaydedildi');
+// ── Current settings ──────────────────────────────────────────────
+const SETTINGS = <%- JSON.stringify(settings || {}) %>;
+
+// ── Tab switching ─────────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.stab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.stab').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'stats') loadStats();
 }
 
+// ── Generic setting update ────────────────────────────────────────
+async function updateSetting(key, val) {
+  await fetch('/api/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ [key]: val }) });
+  showToast('Ayar kaydedildi ✓');
+}
+
+// ── Theme ─────────────────────────────────────────────────────────
+function setTheme(theme) {
+  document.querySelectorAll('.theme-card').forEach(c => c.classList.remove('selected'));
+  const card = document.getElementById('tc-' + theme);
+  if (card) card.classList.add('selected');
+  applyTheme(theme);
+  updateSetting('theme', theme).then(() => showToast('Tema değiştirildi: ' + theme));
+}
+
+function applyTheme(theme) {
+  const body = document.body;
+  body.className = body.className.replace(/\btheme-\w+\b/g, '').trim();
+  if (theme !== 'dark') body.classList.add('theme-' + theme);
+  localStorage.setItem('luna_theme', theme);
+}
+
+// ── Language ──────────────────────────────────────────────────────
+function setLanguage(lang) {
+  updateSetting('language', lang).then(() => showToast('Dil kaydedildi ✓'));
+}
+
+// ── Font size ─────────────────────────────────────────────────────
+function setFontSize(sz) {
+  document.querySelectorAll('.fsz-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('fsz-' + sz).classList.add('selected');
+  document.body.className = document.body.className.replace(/\bfont-\w+\b/g, '').trim();
+  document.body.classList.add('font-' + sz);
+  localStorage.setItem('luna_fontsize', sz);
+  updateSetting('fontSize', sz).then(() => showToast('Yazı boyutu güncellendi'));
+}
+
+// ── Bubble style ──────────────────────────────────────────────────
+function setBubbleStyle(style) {
+  document.querySelectorAll('.bubble-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('bs-' + style).classList.add('selected');
+  localStorage.setItem('luna_bubble', style);
+  updateSetting('bubbleStyle', style).then(() => showToast('Baloncuk stili güncellendi'));
+}
+
+// ── Sidebar width ─────────────────────────────────────────────────
+function setSidebarWidth(w) {
+  document.querySelectorAll('.sw-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('sw-' + w).classList.add('selected');
+  const widths = { sm: '200px', md: '256px', lg: '320px' };
+  document.documentElement.style.setProperty('--sidebar-width', widths[w]);
+  localStorage.setItem('luna_sidebar_w', w);
+  updateSetting('sidebarWidth', w).then(() => showToast('Kenar çubuğu genişliği güncellendi'));
+}
+
+// ── Stats ─────────────────────────────────────────────────────────
+async function loadStats() {
+  try {
+    const res = await fetch('/api/user/stats');
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('st-convs').textContent = data.stats.totalConversations;
+      document.getElementById('st-msgs').textContent = data.stats.totalMessages;
+      document.getElementById('st-imgs').textContent = data.stats.totalImages;
+      document.getElementById('st-files').textContent = data.stats.totalFiles;
+    }
+  } catch(e) {}
+}
+
+// ── Init current selections ───────────────────────────────────────
+function initSelections() {
+  const theme = SETTINGS.theme || localStorage.getItem('luna_theme') || 'light';
+  applyTheme(theme);
+  const tc = document.getElementById('tc-' + theme);
+  if (tc) tc.classList.add('selected');
+
+  const fsz = SETTINGS.fontSize || localStorage.getItem('luna_fontsize') || 'md';
+  const fszBtn = document.getElementById('fsz-' + fsz);
+  if (fszBtn) fszBtn.classList.add('selected');
+
+  const bs = SETTINGS.bubbleStyle || localStorage.getItem('luna_bubble') || 'modern';
+  const bsCard = document.getElementById('bs-' + bs);
+  if (bsCard) bsCard.classList.add('selected');
+
+  const sw = SETTINGS.sidebarWidth || localStorage.getItem('luna_sidebar_w') || 'md';
+  const swBtn = document.getElementById('sw-' + sw);
+  if (swBtn) swBtn.classList.add('selected');
+}
+initSelections();
+
+// ── Account forms ─────────────────────────────────────────────────
 document.getElementById('profileForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const res = await fetch('/api/auth/profile', {
@@ -168,7 +594,7 @@ document.getElementById('profileForm').addEventListener('submit', async (e) => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ firstName: document.getElementById('pFirstName').value, lastName: document.getElementById('pLastName').value })
   });
-  if ((await res.json()).success) { showToast('Profil güncellendi'); location.reload(); }
+  if ((await res.json()).success) { showToast('Profil güncellendi ✓'); location.reload(); }
   else showToast('Bir hata oluştu');
 });
 
@@ -180,7 +606,7 @@ document.getElementById('pwdForm').addEventListener('submit', async (e) => {
     body: JSON.stringify({ currentPassword: document.getElementById('curPwd').value, newPassword: document.getElementById('newPwd').value })
   });
   const data = await res.json();
-  if (data.success) { showToast('Şifre güncellendi'); document.getElementById('pwdForm').reset(); }
+  if (data.success) { showToast('Şifre güncellendi ✓'); document.getElementById('pwdForm').reset(); }
   else showToast(data.error || 'Bir hata oluştu');
 });
 
@@ -188,15 +614,16 @@ async function uploadPhoto(input) {
   const file = input.files[0]; if (!file) return;
   const fd = new FormData(); fd.append('photo', file);
   const res = await fetch('/api/auth/upload-photo', { method: 'POST', body: fd });
-  if ((await res.json()).success) { showToast('Fotoğraf güncellendi'); location.reload(); }
+  if ((await res.json()).success) { showToast('Fotoğraf güncellendi ✓'); location.reload(); }
 }
 
 async function clearChats() {
-  if (!confirm('Tüm sohbetler silinsin mi?')) return;
+  if (!confirm('Tüm sohbetler silinsin mi? Bu işlem geri alınamaz.')) return;
   await fetch('/api/conversations', { method: 'DELETE' });
   showToast('Sohbetler silindi');
 }
 
+// ── Toast ─────────────────────────────────────────────────────────
 function showToast(msg) {
   const c = document.getElementById('toastContainer');
   const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
