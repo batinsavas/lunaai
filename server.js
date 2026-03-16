@@ -26,7 +26,7 @@ const PORT = process.env.PORT || 3000;
 const GROQ_API_KEY = process.env.GROQ_API_KEY || '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';
 
 // ─── GOOGLE OAUTH YAPILANDIRMASI ────────────────────────────
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '337862703898-g9ufpsiulrmutsk223keguk4eetljpf7.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '860144765150-hjr30bmb1tc37lvmi5m97fgp3f8nl967.apps.googleusercontent.com';
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 // ─── DISCORD OAUTH YAPILANDIRMASI ────────────────────────────
