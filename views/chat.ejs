@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" id="html-root">
 
 <head>
   <meta charset="UTF-8">
@@ -7,6 +7,15 @@
   <title>Luna AI — Sohbet</title>
   <link rel="stylesheet" href="/css/style.css">
   <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
+  <!-- Instantly apply saved theme & font BEFORE render -->
+  <script>
+    (function(){
+      var t=localStorage.getItem('luna_theme')||'light';
+      if(t!=='dark') document.documentElement.classList.add('theme-'+t);
+      var f=localStorage.getItem('luna_fontsize')||'md';
+      if(f!=='md') document.documentElement.classList.add('font-'+f);
+    })();
+  </script>
   <!-- Highlight.js -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
@@ -166,10 +175,291 @@
       color: white !important;
       border-color: #1a73e8 !important;
     }
+
+    /* ── New Features CSS ── */
+
+    /* Scroll-to-bottom button */
+    .scroll-btn {
+      position: fixed;
+      bottom: 120px;
+      right: 24px;
+      width: 40px; height: 40px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 50;
+      color: var(--text-2);
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
+    .scroll-btn.visible { display: flex; }
+    .scroll-btn:hover { background: var(--surface-hover); color: var(--text); }
+
+    /* Drag & drop overlay */
+    .drop-overlay {
+      position: fixed; inset: 0;
+      background: rgba(138,108,247,.18);
+      border: 3px dashed var(--accent-purple);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent-purple);
+      pointer-events: none;
+    }
+    .drop-overlay.active { display: flex; }
+
+    /* Char counter */
+    .char-counter {
+      font-size: 0.72rem;
+      color: var(--text-3);
+      padding: 0 4px;
+      align-self: flex-end;
+      margin-bottom: 2px;
+    }
+    .char-counter.warn { color: var(--danger); }
+
+    /* Message timestamp */
+    .msg-timestamp {
+      font-size: 0.68rem;
+      color: var(--text-3);
+      margin-top: 4px;
+      display: none;
+    }
+    body.show-timestamps .msg-timestamp { display: block; }
+
+    /* Message reactions */
+    .msg-reactions {
+      display: none;
+      gap: 4px;
+      margin-top: 6px;
+    }
+    body.show-reactions .msg-reactions { display: flex; }
+    .react-btn {
+      padding: 3px 8px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.78rem;
+      color: var(--text-2);
+      transition: var(--transition);
+    }
+    .react-btn:hover, .react-btn.active { background: var(--surface-hover); color: var(--text); border-color: var(--accent-purple); }
+
+    /* Sidebar search */
+    .sidebar-search {
+      padding: 4px 8px 8px;
+    }
+    .sidebar-search input {
+      width: 100%;
+      padding: 8px 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      color: var(--text);
+      font-size: 0.83rem;
+      font-family: inherit;
+      outline: none;
+    }
+    .sidebar-search input::placeholder { color: var(--text-3); }
+
+    /* Sidebar collapse */
+    .sidebar-toggle {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      width: 36px; height: 36px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 200;
+      color: var(--text-2);
+      transition: var(--transition);
+    }
+    .sidebar-toggle:hover { background: var(--surface-hover); }
+    body.sidebar-collapsed .sidebar-toggle { display: flex; left: 12px; }
+    body.sidebar-collapsed .chat-sidebar { width: 0; overflow: hidden; border: none; }
+    body.sidebar-collapsed .chat-main { width: 100%; }
+
+    /* Topbar theme toggle */
+    .theme-toggle-btn {
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text-2);
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: var(--transition);
+    }
+    .theme-toggle-btn:hover { background: var(--surface-hover); color: var(--text); }
+
+    /* Chat search bar */
+    .chat-searchbar {
+      display: none;
+      padding: 8px 32px;
+      flex-shrink: 0;
+    }
+    .chat-searchbar.visible { display: block; }
+    .chat-searchbar input {
+      width: 100%;
+      padding: 9px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      color: var(--text);
+      font-size: 0.88rem;
+      font-family: inherit;
+      outline: none;
+    }
+    .chat-searchbar input:focus { border-color: var(--accent-purple); }
+
+    /* Rename input in sidebar */
+    .history-item-wrap {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      border-radius: var(--radius-md);
+      transition: var(--transition);
+      position: relative;
+    }
+    .history-item-wrap:hover { background: var(--surface-hover); }
+    .history-item-wrap .history-item { flex: 1; }
+    .history-item-wrap:hover .hist-actions { display: flex; }
+    .hist-actions {
+      display: none;
+      gap: 2px;
+      position: absolute;
+      right: 4px;
+    }
+    .hist-action-btn {
+      padding: 3px;
+      border-radius: 4px;
+      border: none;
+      background: transparent;
+      color: var(--text-3);
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+    }
+    .hist-action-btn:hover { color: var(--text); background: var(--surface-hover); }
+
+    /* Keyboard shortcut modal */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.6);
+      z-index: 9000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: var(--shadow-lg);
+    }
+    .modal-box h2 { font-size: 1rem; font-weight: 700; margin-bottom: 16px; }
+    .kbd-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border); font-size:0.85rem; }
+    .kbd-row:last-child { border-bottom:none; }
+    .kbd { display:inline-block; background:var(--surface-2); border:1px solid var(--border); border-radius:4px; padding:2px 7px; font-size:0.75rem; font-family:'Fira Code',monospace; color:var(--text-2); }
+
+    /* Export dropdown */
+    .export-menu {
+      position: absolute;
+      bottom: 100%;
+      left: 0;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 8px;
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 150px;
+      box-shadow: var(--shadow-lg);
+      z-index: 100;
+    }
+    .export-menu.active { display: flex; }
+
+    /* File size badge on preview */
+    .preview-size { font-size: 0.7rem; color: var(--text-3); margin-top: 2px; }
+
+    /* Image expand on click */
+    .message-img {
+      max-width: 260px;
+      border-radius: var(--radius-md);
+      cursor: zoom-in;
+      transition: opacity .2s;
+    }
+    .message-img:hover { opacity: .9; }
+
+    /* Lightbox */
+    .lightbox {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.88);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 90vw; max-height: 90vh; border-radius: var(--radius-md); }
+
+    /* TTS active indicator */
+    .tts-playing { color: #1a73e8 !important; }
+
+    /* Message highlight on search */
+    .msg-highlight { background: rgba(255,200,0,.18); border-radius: 2px; }
+
+    /* Pinned indicator */
+    .pin-icon { font-size: 12px !important; color: var(--accent-purple); }
   </style>
 </head>
 
 <body>
+  <div class="drop-overlay" id="dropOverlay">🖼️ Görseli bırak!</div>
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()"><img id="lightboxImg" src="" alt=""></div>
+  <div class="modal-overlay" id="shortcutModal" onclick="if(event.target===this)closeModal()">
+    <div class="modal-box">
+      <h2>⌨️ Klavye Kısayolları</h2>
+      <div class="kbd-row"><span>Yeni sohbet</span><span><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Shift</kbd>+<kbd class="kbd">N</kbd></span></div>
+      <div class="kbd-row"><span>Arama aç/kapat</span><span><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">F</kbd></span></div>
+      <div class="kbd-row"><span>Sidebar gizle</span><span><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">B</kbd></span></div>
+      <div class="kbd-row"><span>Odak modu</span><span><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Shift</kbd>+<kbd class="kbd">F</kbd></span></div>
+      <div class="kbd-row"><span>Temayı değiştir</span><span><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Shift</kbd>+<kbd class="kbd">T</kbd></span></div>
+      <div class="kbd-row"><span>Dışa aktar</span><span><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Shift</kbd>+<kbd class="kbd">E</kbd></span></div>
+      <div class="kbd-row"><span>Bu paneli kapat</span><span><kbd class="kbd">Esc</kbd></span></div>
+      <div style="margin-top:16px;text-align:right;"><button class="btn btn-outline btn-sm" onclick="closeModal()">Kapat</button></div>
+    </div>
+  </div>
+
+  <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()">
+    <span class="material-icons-round" style="font-size:18px;">menu</span>
+  </button>
+  <button class="scroll-btn" id="scrollBtn" onclick="scrollDown()">
+    <span class="material-icons-round" style="font-size:18px;">keyboard_arrow_down</span>
+  </button>
   <div class="toast-container" id="toastContainer"></div>
   <div class="health-monitor" id="healthMonitor">
     <div>Gecikme: <span id="healthLatency">0ms</span></div>
@@ -178,7 +468,7 @@
   </div>
 
   <div class="chat-layout">
-    <aside class="chat-sidebar">
+    <aside class="chat-sidebar" id="chatSidebar">
       <div class="sidebar-header">
         <a href="/" class="sidebar-logo">
           <img src="https://i.imgur.com/X4GG8BF.png" alt="Luna">
@@ -190,17 +480,34 @@
           <span class="material-icons-round" style="font-size:18px;">edit</span> Yeni Sohbet
         </button>
       </div>
+      <!-- Sidebar search -->
+      <div class="sidebar-search">
+        <input type="text" id="sidebarSearch" placeholder="🔍 Sohbet ara..." oninput="filterHistory(this.value)">
+      </div>
       <div class="sidebar-section-label">Sohbetler</div>
       <div class="sidebar-history" id="historyList">
         <% if (locals.allConversations) { %>
           <% [...allConversations].reverse().forEach(function(c) { 
                const firstMsg = c.messages.find(function(m) { return m.role==='user' });
-               const title = firstMsg ? firstMsg.content.substring(0, 30) : 'Yeni Sohbet';
+               const title = (c.title) || (firstMsg ? firstMsg.content.substring(0, 30) : 'Yeni Sohbet');
           %>
-            <a href="/chat?id=<%= c.id %>" class="history-item <%= locals.conversation && conversation.id === c.id ? 'active' : '' %>">
-              <span class="material-icons-round" style="font-size:14px; opacity:0.5;">chat</span>
-              <%= title %><%= title.length>= 30 ? '...' : '' %>
-            </a>
+            <div class="history-item-wrap" data-title="<%= title.toLowerCase() %>" data-id="<%= c.id %>">
+              <% if (c.pinned) { %><span class="material-icons-round pin-icon" style="margin-left:8px;">push_pin</span><% } %>
+              <a href="/chat?id=<%= c.id %>" class="history-item <%= locals.conversation && conversation.id === c.id ? 'active' : '' %>">
+                <%= title %><%= title.length >= 30 ? '...' : '' %>
+              </a>
+              <div class="hist-actions">
+                <button class="hist-action-btn" title="Yeniden adlandır" onclick="renameConv('<%= c.id %>',this)">
+                  <span class="material-icons-round" style="font-size:14px;">edit</span>
+                </button>
+                <button class="hist-action-btn" title="Pinle" onclick="pinConv('<%= c.id %>',this)">
+                  <span class="material-icons-round" style="font-size:14px;">push_pin</span>
+                </button>
+                <button class="hist-action-btn" style="color:var(--danger);" title="Sil" onclick="deleteConv('<%= c.id %>',this)">
+                  <span class="material-icons-round" style="font-size:14px;">delete</span>
+                </button>
+              </div>
+            </div>
           <% }); %>
         <% } %>
       </div>
@@ -213,8 +520,25 @@
 
     <main class="chat-main">
       <div class="chat-topbar">
+        <!-- Sidebar collapse -->
+        <button class="btn-icon" onclick="toggleSidebar()" title="Kenar çubuğunu gizle/göster" style="margin-right:auto;">
+          <span class="material-icons-round">menu</span>
+        </button>
         <button class="btn-icon" onclick="toggleCanvas()" title="HTML Önizleme" id="canvasToggleBtn" style="display:none;">
           <span class="material-icons-round">code</span>
+        </button>
+        <!-- Theme quick toggle -->
+        <button class="theme-toggle-btn" id="themeToggleBtn" onclick="cycleTheme()" title="Temayı değiştir">
+          <span class="material-icons-round" style="font-size:16px;">brightness_6</span>
+          <span id="themeLabel">Açık</span>
+        </button>
+        <!-- Chat search -->
+        <button class="btn-icon" onclick="toggleChatSearch()" title="Mesajlarda ara">
+          <span class="material-icons-round">search</span>
+        </button>
+        <!-- Keyboard shortcuts -->
+        <button class="btn-icon" onclick="openModal()" title="Klavye kısayolları">
+          <span class="material-icons-round">keyboard</span>
         </button>
         <div style="position:relative;">
           <div class="avatar avatar-initials" id="profileAvatar" onclick="toggleProfileMenu()" style="cursor:pointer;">
@@ -250,11 +574,22 @@
         <h1 class="welcome-greeting">Merhaba, <%= user ? user.firstName : 'Kullanıcı' %></h1>
         <p class="welcome-subtitle">Sohbet, kod yazma, görsel analiz ve daha pek çok konuda<br>yardımcı olmaya hazırım.</p>
         <div class="welcome-chips">
-          <button class="chip" onclick="setInput('Bana Python ile scraper yaz')"><span class="material-icons-round">code</span> Kod Yaz</button>
+          <button class="chip" onclick="setInput('Bana Python ile web scraper yaz')"><span class="material-icons-round">code</span> Kod Yaz</button>
           <button class="chip" onclick="setInput('Bugün nasıl verimli çalışabilirim?')"><span class="material-icons-round">tips_and_updates</span> Verimlilik</button>
           <button class="chip" onclick="document.getElementById('fileInput').click()"><span class="material-icons-round">image</span> Görsel Analiz</button>
-          <button class="chip" onclick="setInput('Gezilecek yerler')"><span class="material-icons-round">travel_explore</span> Keşfet</button>
+          <button class="chip" onclick="setInput('Gezilecek güzel yerler öner')"><span class="material-icons-round">travel_explore</span> Keşfet</button>
+          <button class="chip" onclick="setInput('Matematik sorusu: ')"><span class="material-icons-round">calculate</span> Matematik</button>
+          <button class="chip" onclick="setInput('Bu resmi analiz et ve detaylıca açıkla')"><span class="material-icons-round">photo_camera</span> Foto Analiz</button>
+          <button class="chip" onclick="setInput('Bana kısa bir hikaye yaz')"><span class="material-icons-round">auto_stories</span> Hikaye</button>
+          <button class="chip" onclick="setInput('CSS ile modern bir kart tasarımı yap')"><span class="material-icons-round">palette</span> Tasarım</button>
+          <button class="chip" onclick="setInput('Bana motivasyon ver')"><span class="material-icons-round">bolt</span> Motivasyon</button>
+          <button class="chip" onclick="setInput('SQL sorgusunu açıkla: ')"><span class="material-icons-round">storage</span> Veritabanı</button>
         </div>
+      </div>
+
+      <!-- Chat message search bar -->
+      <div class="chat-searchbar" id="chatSearchBar">
+        <input type="text" id="chatSearchInput" placeholder="🔍 Mesajlarda ara..." oninput="searchMessages(this.value)" onkeydown="if(event.key==='Escape') toggleChatSearch()">
       </div>
 
       <div class="chat-messages <%= (locals.conversation && conversation.messages.length > 0) ? 'active' : '' %>" id="chatMessages">
@@ -332,10 +667,18 @@
               <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled><span class="material-icons-round" style="font-size:18px;">send</span></button>
             </div>
           </div>
-          <div style="padding:0 12px 10px; display:flex; align-items:center; justify-content:space-between;">
-            <div style="display:flex; gap:8px;">
+          <div style="padding:0 12px 10px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
               <button id="searchToggle" class="btn-search-toggle" onclick="toggleSearchMode()"><span class="material-icons-round">travel_explore</span> Ara</button>
               <button class="btn-search-toggle" onclick="togglePremiumMenu()"><span class="material-icons-round">auto_awesome</span> Araçlar</button>
+              <div style="position:relative;">
+                <button class="btn-search-toggle" onclick="toggleExportMenu()"><span class="material-icons-round">download</span> Dışa Aktar</button>
+                <div id="exportMenu" class="export-menu">
+                  <div class="premium-menu-item" onclick="exportTxt()"><span class="material-icons-round">text_snippet</span> TXT</div>
+                  <div class="premium-menu-item" onclick="exportJson()"><span class="material-icons-round">data_object</span> JSON</div>
+                  <div class="premium-menu-item" onclick="exportMd()"><span class="material-icons-round">description</span> Markdown</div>
+                </div>
+              </div>
             </div>
             <div id="premiumMenu" class="premium-menu">
               <div class="premium-menu-item" onclick="summarizeChat()"><span class="material-icons-round">summarize</span> Özetle</div>
@@ -348,19 +691,29 @@
                 <input type="range" class="premium-slider" min="0" max="2" step="0.1" value="1.0" oninput="updateSlider('Creativity', this.value)">
               </div>
               <div class="premium-menu-item" onclick="toggleHealthMonitor()"><span class="material-icons-round">monitor_heart</span> Sistem</div>
-              <div class="premium-menu-item" onclick="toggleTheme('oled')"><span class="material-icons-round">dark_mode</span> OLED</div>
               <div class="premium-menu-item" onclick="clearAllData()" style="color:var(--danger);"><span class="material-icons-round">delete_forever</span> Sıfırla</div>
             </div>
             <div id="personaMenu" class="premium-menu" style="right:170px;">
-              <div class="premium-menu-item" onclick="setPersona('Standart')">Standart</div>
-              <div class="premium-menu-item" onclick="setPersona('Yazılımcı')">Yazılımcı</div>
+              <div class="premium-menu-item" onclick="setPersona('Standart')"><span class="material-icons-round">person</span> Standart</div>
+              <div class="premium-menu-item" onclick="setPersona('Yazılımcı')"><span class="material-icons-round">code</span> Yazılımcı</div>
+              <div class="premium-menu-item" onclick="setPersona('Akademisyen')"><span class="material-icons-round">school</span> Akademisyen</div>
+              <div class="premium-menu-item" onclick="setPersona('Yaratıcı Yazar')"><span class="material-icons-round">auto_stories</span> Yaratıcı Yazar</div>
+              <div class="premium-menu-item" onclick="setPersona('Analist')"><span class="material-icons-round">analytics</span> Analist</div>
+              <div class="premium-menu-item" onclick="setPersona('Öğretmen')"><span class="material-icons-round">cast_for_education</span> Öğretmen</div>
             </div>
             <div id="templateMenu" class="premium-menu" style="right:170px;">
-              <div class="premium-menu-item" onclick="setInput('Kodu incele: ')">Kod Analiz</div>
+              <div class="premium-menu-item" onclick="setInput('Kodu incele ve hataları bul: ')">Kod Analiz</div>
+              <div class="premium-menu-item" onclick="setInput('Makale yaz: ')">Makale</div>
+              <div class="premium-menu-item" onclick="setInput('Özgeçmiş yaz: ')">CV</div>
+              <div class="premium-menu-item" onclick="setInput('E-posta yaz: ')">E-posta</div>
+              <div class="premium-menu-item" onclick="setInput('Bug raporu hazırla: ')">Bug Raporu</div>
+              <div class="premium-menu-item" onclick="setInput('Toplantı notu yaz: ')">Toplantı Notu</div>
+              <div class="premium-menu-item" onclick="setInput('API dokümanı yaz: ')">API Doküman</div>
+              <div class="premium-menu-item" onclick="setInput('README.md yaz: ')">README</div>
             </div>
           </div>
         </div>
-        <div class="input-footer">Luna AI hata yapabilir.</div>
+        <div class="input-footer">Luna AI hata yapabilir. • <a href="/settings" style="color:var(--text-3);">Ayarlar</a> • <a href="/feedback" style="color:var(--text-3);">Geri Bildirim</a></div>
       </div>
     </main>
 
@@ -471,15 +824,143 @@
     function refreshCanvas(){ const d=canvasIframe.contentDocument, c=d.documentElement.outerHTML; d.open(); d.write(c); d.close(); }
     function speakText(b){ if(!('speechSynthesis' in window)) return; window.speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(decodeURIComponent(b.getAttribute('data-text'))); u.lang='tr-TR'; window.speechSynthesis.speak(u); }
     
+    // ── ENHANCED FEATURES ────────────────────────────────────────────
+
+    // Scroll-to-bottom button visibility
+    chatMessages.addEventListener('scroll', () => {
+      const atBottom = chatMessages.scrollHeight - chatMessages.scrollTop - chatMessages.clientHeight < 80;
+      const sb = document.getElementById('scrollBtn');
+      if(sb) sb.classList.toggle('visible', !atBottom);
+    });
+
+    // Theme system
+    const themeOrder = ['light','dark','oled','glass'];
+    const themeLabels = {light:'Açık',dark:'Koyu',oled:'OLED',glass:'Cam'};
+    let currentTheme = localStorage.getItem('luna_theme') || 'light';
+    function applyTheme(t) {
+      const root = document.documentElement;
+      root.className = root.className.replace(/\btheme-\w+\b/g,'').trim();
+      if(t !== 'dark') root.classList.add('theme-'+t);
+      const lbl = document.getElementById('themeLabel');
+      if(lbl) lbl.textContent = themeLabels[t] || t;
+    }
+    function cycleTheme(){
+      const idx = (themeOrder.indexOf(currentTheme)+1) % themeOrder.length;
+      currentTheme = themeOrder[idx];
+      applyTheme(currentTheme);
+      localStorage.setItem('luna_theme', currentTheme);
+      fetch('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({theme:currentTheme})});
+      showToast('Tema: ' + (themeLabels[currentTheme]||currentTheme));
+    }
+    function toggleTheme(t){ currentTheme=t; applyTheme(t); localStorage.setItem('luna_theme',t); }
+    applyTheme(currentTheme);
+
+    // Sidebar
+    function toggleSidebar(){
+      document.body.classList.toggle('sidebar-collapsed');
+      localStorage.setItem('luna_sidebar_c', document.body.classList.contains('sidebar-collapsed')?'1':'0');
+    }
+    if(localStorage.getItem('luna_sidebar_c')==='1') document.body.classList.add('sidebar-collapsed');
+
+    // Sidebar search
+    function filterHistory(q){
+      document.querySelectorAll('.history-item-wrap').forEach(el=>{
+        el.style.display = (el.dataset.title||'').includes(q.toLowerCase()) ? '' : 'none';
+      });
+    }
+
+    // Drag & drop
+    document.addEventListener('dragover', e=>{e.preventDefault(); document.getElementById('dropOverlay').classList.add('active');});
+    document.addEventListener('dragleave', e=>{if(!e.relatedTarget) document.getElementById('dropOverlay').classList.remove('active');});
+    document.addEventListener('drop', e=>{
+      e.preventDefault(); document.getElementById('dropOverlay').classList.remove('active');
+      const file = e.dataTransfer.files[0];
+      if(file){ pendingFile=file; previewStrip.innerHTML=''; previewStrip.classList.add('visible');
+        if(file.type.startsWith('image/')){ const fr=new FileReader(); fr.onload=(ev)=>{ previewStrip.innerHTML=`<div class="preview-img-thumb"><img src="${ev.target.result}" style="max-height:80px;border-radius:8px;"><button onclick="clearFile()" style="position:absolute;top:4px;right:4px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;">✕</button></div>`; }; fr.readAsDataURL(file); }
+        else { previewStrip.innerHTML=`<div class="chip"><span class="material-icons-round" style="font-size:16px;">description</span>${file.name}</div>`; }
+        sendBtn.disabled=false; }
+    });
+
+    // Clipboard paste
+    document.addEventListener('paste', e=>{
+      const items=(e.clipboardData||e.originalEvent.clipboardData).items;
+      for(const item of items){
+        if(item.type.startsWith('image/')){
+          e.preventDefault(); const f=item.getAsFile(); pendingFile=f;
+          const fr=new FileReader(); fr.onload=(ev)=>{ previewStrip.innerHTML=`<div class="preview-img-thumb"><img src="${ev.target.result}" style="max-height:80px;border-radius:8px;"><button onclick="clearFile()" style="position:absolute;top:4px;right:4px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;">✕</button></div>`; previewStrip.classList.add('visible'); }; fr.readAsDataURL(f);
+          sendBtn.disabled=false; showToast('Görsel yapıştırıldı 📋'); break;
+        }
+      }
+    });
+
+    // Auto-draft restore
+    const draft = localStorage.getItem('luna_draft_'+SESSION_ID);
+    if(draft){ chatInput.value=draft; chatInput.dispatchEvent(new Event('input')); }
+    chatInput.addEventListener('input', ()=>{ localStorage.setItem('luna_draft_'+SESSION_ID, chatInput.value); });
+
+    // Lightbox
+    function openLightbox(img){ document.getElementById('lightboxImg').src=img.src; document.getElementById('lightbox').classList.add('open'); }
+    function closeLightbox(){ document.getElementById('lightbox').classList.remove('open'); }
+
+    // Modal
+    function openModal(){ document.getElementById('shortcutModal').classList.add('open'); }
+    function closeModal(){ document.getElementById('shortcutModal').classList.remove('open'); }
+
+    // Chat search
+    function toggleChatSearch(){
+      const bar=document.getElementById('chatSearchBar');
+      if(bar){ bar.classList.toggle('visible'); if(bar.classList.contains('visible')) document.getElementById('chatSearchInput').focus(); }
+    }
+
+    // Export
+    function toggleExportMenu(){ document.getElementById('exportMenu').classList.toggle('active'); }
+    function exportTxt(){ let out=''; history.forEach(m=>{ out+=(m.role==='user'?'Sen':'Luna')+': '+m.parts[0].text+'\n\n'; }); dl('luna-chat.txt',out,'text/plain'); showToast('TXT indirildi ✓'); }
+    function exportJson(){ dl('luna-chat.json',JSON.stringify(history,null,2),'application/json'); showToast('JSON indirildi ✓'); }
+    function exportMd(){ let out='# Luna AI Sohbeti\n\n'; history.forEach(m=>{ out+='**'+(m.role==='user'?'Sen':'Luna')+':**\n\n'+m.parts[0].text+'\n\n---\n\n'; }); dl('luna-chat.md',out,'text/markdown'); showToast('Markdown indirildi ✓'); }
+    function dl(name,content,type){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([content],{type})); a.download=name; a.click(); }
+
+    // Conversation actions
+    async function renameConv(id,btn){ const wrap=btn.closest('.history-item-wrap'),link=wrap.querySelector('.history-item'); const nt=prompt('Yeni adı girin:',link.textContent.trim()); if(!nt) return; const res=await fetch('/api/conversations/'+id+'/rename',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:nt})}); if((await res.json()).success){ link.textContent=nt; showToast('İsim güncellendi ✓'); } }
+    async function pinConv(id){ const res=await fetch('/api/conversations/'+id+'/pin',{method:'PUT'}); const data=await res.json(); if(data.success) showToast(data.pinned?'Sabitlendi 📌':'Sabit kaldırıldı'); }
+    async function deleteConv(id,btn){ if(!confirm('Bu sohbet silinsin mi?')) return; await fetch('/api/conversations/'+id,{method:'DELETE'}); btn.closest('.history-item-wrap').remove(); showToast('Sohbet silindi'); }
+
+    // New chat
+    function newChat(){ window.location.href='/chat'; }
+
+    // Premium menus
     function togglePremiumMenu(){ document.getElementById('premiumMenu').classList.toggle('active'); }
     function togglePersonaMenu(){ document.getElementById('personaMenu').classList.toggle('active'); }
     function toggleTemplateMenu(){ document.getElementById('templateMenu').classList.toggle('active'); }
-    function toggleFocusMode(){ document.body.classList.toggle('focus-mode'); }
+
+    // Persona & other
+    function setPersona(p){ showToast('Persona: '+p); localStorage.setItem('luna_persona',p); }
+    function toggleFocusMode(){ document.body.classList.toggle('focus-mode'); showToast(document.body.classList.contains('focus-mode')?'Odak modu açık':'Kapalı'); }
     function toggleHealthMonitor(){ document.getElementById('healthMonitor').classList.toggle('active'); }
-    function toggleTheme(t){ document.body.className = t==='oled'?'theme-oled':'theme-glass'; }
-    function clearAllData(){ if(confirm('Emin misiniz?')){ localStorage.clear(); location.reload(); } }
-    function setPersona(p){ showToast(p); }
+    function clearAllData(){ if(confirm('Tüm yerel veriler silinsin mi?')){ localStorage.clear(); location.reload(); } }
     function updateSlider(t,v){ document.getElementById('val'+t).textContent=v; }
+    function summarizeChat(){ if(history.length===0){showToast('Sohbet boş');return;} setInput('Yukarıdaki sohbetin özetini 3-4 cümleyle çıkar.'); sendMessage(); }
+    function stopTts(){ window.speechSynthesis.cancel(); }
+
+    // Settings sync
+    fetch('/api/settings').then(r=>r.json()).then(d=>{
+      if(!d.success) return; const s=d.settings;
+      if(s.theme && !localStorage.getItem('luna_theme')){ currentTheme=s.theme; applyTheme(s.theme); }
+      if(s.showTimestamps) document.body.classList.add('show-timestamps');
+      if(s.ttsLang) localStorage.setItem('luna_ttsLang',s.ttsLang);
+    }).catch(()=>{});
+    document.body.classList.add('show-reactions');
+
+    // Global keyboard shortcuts
+    document.addEventListener('keydown', e=>{
+      if(e.ctrlKey && e.shiftKey && e.key==='N'){ e.preventDefault(); newChat(); }
+      if(e.ctrlKey && e.key==='b'){ e.preventDefault(); toggleSidebar(); }
+      if(e.ctrlKey && e.key==='f' && !e.shiftKey){ e.preventDefault(); toggleChatSearch(); }
+      if(e.ctrlKey && e.shiftKey && e.key==='F'){ e.preventDefault(); toggleFocusMode(); }
+      if(e.ctrlKey && e.shiftKey && e.key==='T'){ e.preventDefault(); cycleTheme(); }
+      if(e.ctrlKey && e.shiftKey && e.key==='E'){ e.preventDefault(); exportTxt(); }
+      if(e.ctrlKey && e.key==='k'){ e.preventDefault(); openModal(); }
+      if(e.key==='Escape'){ closeModal(); closeLightbox(); }
+    });
   </script>
 </body>
 </html>
