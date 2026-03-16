@@ -718,12 +718,12 @@
               canvasToggleBtn.style.display = 'flex';
             }
           }
-        } else {
+} else {
           let errStr = data.error || 'Üzgünüm, bir sorun yaşadım. 🙏';
           if (data.errorCode) {
             errStr += `\n<br><span style="color:var(--danger); font-size:0.85rem;">[Hata Kodu: ${data.errorCode}]</span>`;
           }
-          addLunaMessage(errStr);
+          addLunaMessage(errStr); // Burayı düzelttik
         }
       } catch {
         removeEl(thinkId);
