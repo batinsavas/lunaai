@@ -25,9 +25,9 @@ const PORT = process.env.PORT || 3000;
 // ─── API ANAHTARLARI ─────────────────────────────────────────
 const GROQ_API_KEY = process.env.GROQ_API_KEY || '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';
 // Text model (no vision)
-const GROQ_TEXT_MODEL = 'qwen/qwen3-32b';
+const GROQ_TEXT_MODEL = 'openai/gpt-oss-120b';
 // Vision model — supports image_url content blocks
-const GROQ_VISION_MODEL = 'meta-llama/llama-4-scout-17b-16e-instruct';
+const GROQ_VISION_MODEL = 'openai/gpt-oss-120b';
 
 // ─── GOOGLE OAUTH YAPILANDIRMASI ────────────────────────────
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '860144765150-hjr30bmb1tc37lvmi5m97fgp3f8nl967.apps.googleusercontent.com';
