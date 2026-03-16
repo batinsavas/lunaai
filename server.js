@@ -114,15 +114,26 @@ const profileStorage = multer.diskStorage({
 const profileUpload = multer({ storage: profileStorage, limits: { fileSize: 5 * 1024 * 1024 } });
 
 // ─── Veritabanı Yardımcıları ─────────────────────────────────
-const DB_PATH = path.join(__dirname, 'database.json');
+const IS_VERCEL = process.env.VERCEL || process.env.NOW_REGION;
+const DB_PATH = IS_VERCEL ? path.join('/tmp', 'database.json') : path.join(__dirname, 'database.json');
+const BUNDLED_DB_PATH = path.join(__dirname, 'database.json');
 
 function readDB() {
   try {
+    // Vercel'de /tmp klasörüne yazma iznimiz var, kök dizine yok.
+    // Eğer /tmp'de dosya yoksa, projedeki şablonu oraya kopyalıyoruz.
+    if (IS_VERCEL && !fs.existsSync(DB_PATH)) {
+      if (fs.existsSync(BUNDLED_DB_PATH)) {
+        fs.copyFileSync(BUNDLED_DB_PATH, DB_PATH);
+      }
+    }
+
     const data = fs.readFileSync(DB_PATH, 'utf-8');
     const db = JSON.parse(data);
     if (!db.users) db.users = [];
     return db;
-  } catch {
+  } catch (err) {
+    console.error("Database Read Error:", err);
     return { users: [], conversations: [], uploadedFiles: [], settings: { theme: 'dark' }, stats: {}, learningLog: [], feedbacks: [], notifications: [] };
   }
 }
