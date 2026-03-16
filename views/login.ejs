@@ -165,6 +165,17 @@ async function handleEmailRegister(event) {
     return showAlert('Şifreler uyuşmuyor.');
   }
 
+  // Client-side age check
+  const birth = new Date(data.birthDate);
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const m = today.getMonth() - birth.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+  
+  if (age < 13) {
+    return showAlert('Kayıt olmak için 13 yaşından büyük olmalısınız.');
+  }
+
   try {
     const res = await fetch('/api/auth/register', {
       method: 'POST',
@@ -191,6 +202,7 @@ function showAlert(msg) {
 
 async function handleCredentialResponse(response) {
   showAlert('none');
+  console.log("Google Login Response Received:", response);
   try {
     const res = await fetch('/api/auth/google', {
       method: 'POST',
@@ -198,10 +210,15 @@ async function handleCredentialResponse(response) {
       body: JSON.stringify({ token: response.credential })
     });
     const data = await res.json();
-    if (data.success) window.location.href = '/chat';
-    else showAlert(data.error || 'Google girişi başarısız.');
+    if (data.success) {
+      window.location.href = '/chat';
+    } else {
+      console.error("Auth Fail:", data);
+      showAlert(data.error || 'Google girişi başarısız.');
+    }
   } catch (error) {
-    showAlert('Google girişi sırasında bir hata oluştu.');
+    console.error("Request Error:", error);
+    showAlert('Google girişi sırasında bir ağ hatası oluştu.');
   }
 }
 
