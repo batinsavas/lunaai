@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Luna AI — Giriş Yap</title>
   <link rel="stylesheet" href="/css/style.css">
   <link rel="icon" href="https://i.imgur.com/X4GG8BF.png" type="image/png">
@@ -9,93 +10,205 @@
 </head>
 <body>
 <div class="auth-page">
-  <div class="auth-card" style="max-width: 400px; text-align: center;">
+  <div class="auth-card">
 
     <!-- Logo -->
-    <div class="auth-logo" style="margin-bottom: 30px;">
-      <img src="https://i.imgur.com/X4GG8BF.png" alt="Luna AI Logo" onerror="this.src='/img/fallback.png'" style="width: 80px; height: 80px; margin-bottom: 20px;">
-      <h1 style="font-size: 1.8rem; margin-bottom: 10px;">Luna AI'ya Hoş Geldin</h1>
-      <p style="color: var(--text-2); font-size: 0.95rem;">Devam etmek için Google ile giriş yap</p>
+    <div class="auth-logo">
+      <img src="https://i.imgur.com/X4GG8BF.png" alt="Luna AI Logo" onerror="this.src='/img/fallback.png'">
+      <h1>Luna AI</h1>
+      <p id="page-subtitle">Hesabına giriş yap veya kayıt ol</p>
     </div>
 
-    <!-- Error -->
+    <!-- Error Messages -->
+    <div class="error-msg" id="errorMsg" style="display:none;"></div>
     <% if (typeof error !== 'undefined' && error) { %>
-    <div class="error-msg" style="margin-bottom: 20px;">
-      <span class="material-icons-round" style="font-size:16px; vertical-align:middle; margin-right:4px;">error_outline</span>
-      <%= error %>
-    </div>
-    <% } %>
-    <div class="error-msg" id="errorMsg" style="display:none; margin-bottom: 20px;"></div>
-
-    <!-- Google Login Button Container -->
-    <div id="g_id_onload"
-         data-client_id="860144765150-hjr30bmb1tc37lvmi5m97fgp3f8nl967.apps.googleusercontent.com"
-         data-context="signin"
-         data-ux_mode="popup"
-         data-callback="handleCredentialResponse"
-         data-auto_prompt="false">
-    </div>
-
-    <div style="display: flex; flex-direction: column; gap: 12px; align-items: center; margin-bottom: 20px;">
-      <div class="g_id_signin"
-           data-type="standard"
-           data-shape="rectangular"
-           data-theme="outline"
-           data-text="continue_with"
-           data-size="large"
-           data-logo_alignment="left"
-           style="width: 100%; max-width: 400px; display: flex; justify-content: center;">
+      <div class="error-msg">
+        <span class="material-icons-round">error_outline</span>
+        <%= error %>
       </div>
+    <% } %>
 
-      <a href="/api/auth/discord" style="display: flex; align-items: center; justify-content: center; width: 100%; max-width: 400px; padding: 10px; background-color: #5865F2; color: white; border-radius: 4px; text-decoration: none; font-family: 'Roboto', 'Google Sans', arial, sans-serif; font-weight: 500; font-size: 14px; box-sizing: border-box; height: 40px; border: 1px solid #5865F2;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 127.14 96.36" style="margin-right: 12px; fill: white;">
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchTab('login')">Giriş Yap</button>
+      <button class="auth-tab" onclick="switchTab('register')">Kayıt Ol</button>
+    </div>
+
+    <!-- Login Form -->
+    <div id="loginFormContainer" class="auth-form-container active">
+      <form id="loginForm" onsubmit="handleEmailLogin(event)">
+        <div class="form-group">
+          <label class="form-label">E-Posta Adresi</label>
+          <input type="email" name="email" class="form-input" placeholder="ornek@mail.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Şifre</label>
+          <input type="password" name="password" class="form-input" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-filled btn-submit">
+          <span>Giriş Yap</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Register Form -->
+    <div id="registerFormContainer" class="auth-form-container">
+      <form id="registerForm" onsubmit="handleEmailRegister(event)">
+        <div class="form-group">
+          <label class="form-label">Ad Soyad</label>
+          <input type="text" name="fullName" class="form-input" placeholder="Ad Soyad" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">E-Posta Adresi</label>
+          <input type="email" name="email" class="form-input" placeholder="ornek@mail.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Doğum Tarihi</label>
+          <input type="date" name="birthDate" class="form-input" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Şifre</label>
+            <input type="password" name="password" class="form-input" placeholder="••••••••" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Şifre Tekrarı</label>
+            <input type="password" name="confirmPassword" class="form-input" placeholder="••••••••" required>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-filled btn-submit">
+          <span>Kayıt Ol</span>
+        </button>
+      </form>
+    </div>
+
+    <div class="auth-divider">
+      <span>veya şununla devam et</span>
+    </div>
+
+    <!-- Social Logins -->
+    <div class="social-btns">
+      <div id="g_id_onload"
+           data-client_id="860144765150-hjr30bmb1tc37lvmi5m97fgp3f8nl967.apps.googleusercontent.com"
+           data-context="signin"
+           data-ux_mode="popup"
+           data-callback="handleCredentialResponse"
+           data-auto_prompt="false">
+      </div>
+      <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="signin_with" data-size="large" data-logo_alignment="left" style="width: 100%; display: flex; justify-content: center;"></div>
+
+      <a href="/api/auth/discord" class="btn btn-outline" style="background-color: #5865F2; border-color: #5865F2; color: white;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 127.14 96.36" style="margin-right: 8px; fill: white;">
           <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14c2.64-27.38-4.51-51.11-19.32-72.15ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.31,60,73.31,53s5-12.74,11.43-12.74S96.3,46,96.19,53,91.08,65.69,84.69,65.69Z"/>
         </svg>
-        Sign in with Discord
+        Discord ile Giriş Yap
       </a>
     </div>
 
-    <p style="font-size:0.78rem; color:var(--text-3); text-align:center; margin-top:20px; line-height:1.5;">
-      Giriş yaparak <a href="/terms" style="color:var(--text-2);">Kullanım Şartları</a>'nı kabul ediyorsun.
+    <p style="font-size:0.75rem; color:var(--text-3); text-align:center; margin-top:24px; line-height:1.5;">
+      Devam ederek <a href="/terms" style="color:var(--text-2);">Kullanım Şartları</a>'nı kabul etmiş olursun.
     </p>
 
   </div>
 </div>
 
 <script>
-window.onload = function() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const error = urlParams.get('error');
-  if (error) {
-     const errEl = document.getElementById('errorMsg');
-     errEl.innerHTML = `<span class="material-icons-round" style="font-size:16px; margin-right:4px; vertical-align:middle;">error_outline</span>${error}`;
-     errEl.style.display = 'block';
+function switchTab(tab) {
+  const loginForm = document.getElementById('loginFormContainer');
+  const registerForm = document.getElementById('registerFormContainer');
+  const tabs = document.querySelectorAll('.auth-tab');
+  const subtitle = document.getElementById('page-subtitle');
+  
+  if (tab === 'login') {
+    loginForm.classList.add('active');
+    registerForm.classList.remove('active');
+    tabs[0].classList.add('active');
+    tabs[1].classList.remove('active');
+    subtitle.innerText = "Hesabına giriş yap";
+  } else {
+    loginForm.classList.remove('active');
+    registerForm.classList.add('active');
+    tabs[0].classList.remove('active');
+    tabs[1].classList.add('active');
+    subtitle.innerText = "Yeni bir hesap oluştur";
+  }
+  document.getElementById('errorMsg').style.display = 'none';
+}
+
+async function handleEmailLogin(event) {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  const data = Object.fromEntries(formData.entries());
+  showAlert('none');
+
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (result.success) window.location.href = '/chat';
+    else showAlert(result.error);
+  } catch (err) {
+    showAlert('Giriş yapılamadı. Sunucu hatası.');
+  }
+}
+
+async function handleEmailRegister(event) {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  const data = Object.fromEntries(formData.entries());
+  showAlert('none');
+
+  if (data.password !== data.confirmPassword) {
+    return showAlert('Şifreler uyuşmuyor.');
+  }
+
+  try {
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (result.success) window.location.href = '/chat';
+    else showAlert(result.error);
+  } catch (err) {
+    showAlert('Kayıt yapılamadı. Sunucu hatası.');
+  }
+}
+
+function showAlert(msg) {
+  const errEl = document.getElementById('errorMsg');
+  if (msg === 'none') {
+    errEl.style.display = 'none';
+  } else {
+    errEl.innerHTML = `<span class="material-icons-round" style="font-size:16px;">error_outline</span>${msg}`;
+    errEl.style.display = 'flex';
   }
 }
 
 async function handleCredentialResponse(response) {
-  const errEl = document.getElementById('errorMsg');
-  errEl.style.display = 'none';
-
+  showAlert('none');
   try {
     const res = await fetch('/api/auth/google', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token: response.credential })
     });
-
     const data = await res.json();
-    if (data.success) {
-      window.location.href = '/chat';
-    } else {
-      errEl.innerHTML = `<span class="material-icons-round" style="font-size:16px; margin-right:4px; vertical-align:middle;">error_outline</span>${data.error}`;
-      errEl.style.display = 'block';
-    }
+    if (data.success) window.location.href = '/chat';
+    else showAlert(data.error || 'Google girişi başarısız.');
   } catch (error) {
-    console.error("Login attempt failed", error);
-    errEl.innerHTML = `<span class="material-icons-round" style="font-size:16px; margin-right:4px; vertical-align:middle;">error_outline</span>Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.`;
-    errEl.style.display = 'block';
+    showAlert('Google girişi sırasında bir hata oluştu.');
   }
+}
+
+window.onload = function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const error = urlParams.get('error');
+  if (error) showAlert(error);
 }
 </script>
 </body>
