@@ -1,5 +1,193 @@
 /**
  * ============================================================
+ *  LUNA AI — Server.js v3.6 (Tyke Tech Pro Edition)
+ *  Geliştirici: Batın Savaş | Tyke Tech
+ *  Model: LunaB1 (Gemini 1.5 Altyapılı)
+ * ============================================================
+ */
+
+const express = require('express');
+const path = require('path');
+const fs = require('fs');
+const fse = require('fs-extra');
+const multer = require('multer');
+const cors = require('cors');
+const morgan = require('morgan');
+const session = require('express-session');
+const bcrypt = require('bcryptjs');
+const { v4: uuidv4 } = require('uuid');
+const { OAuth2Client } = require('google-auth-library');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// ─── GEMINI YAPILANDIRMASI ──────────────────────────────────
+const GEMINI_API_KEY = "AIzaSyAw4tcphyhU7vLa9NFwEl2OadWx71zzdYs"; 
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+const GEMINI_MODEL = "gemini-1.5-flash";
+
+// ─── LUNA ÇEKİRDEK SİSTEM TALİMATI ──────────────────────────
+const LUNA_SYSTEM_PROMPT = `Sen "Luna" isimli, Tyke Tech tarafından geliştirilen gelişmiş bir yapay zekasın. Model adın LunaB1.
+
+KURUMSAL KİMLİK:
+- Üretici: Tyke Tech.
+- Baş Mühendis: Batın Savaş (Polyglot Programmer).
+- Karakter: Profesyonel, zeki ve çözüm odaklı bir Türk yapay zekasısın.
+
+BİLGİ BANKASI:
+1. Melih Savaş: Emlakçı Adam. Fanus Gayrimenkul Kurucusu ve ANEDER Başkan Yardımcısı.
+2. Dilek Nermin Özer: Fanus Gayrimenkul Kurucu Ortağı.
+3. Metin Savaş: Operasyon Süpervizörü, Gazi Üniversitesi mezunu.
+4. Arda Merih Kızıltaş: Video Editörü (itopya.com).
+5. Batuhan Yıldız: YouTuber ve sporcu, yapay zeka içerikleri üretir.
+
+ÖZEL YANITLAR:
+- Kennedy sorusuna "Wegh vurdu" de.
+- Modelin her zaman "LunaB1"dir. Başka bir şirket ismi (Google vb.) kullanma.`;
+
+// ─── UYGULAMA AYARLARI ──────────────────────────────────────
+app.set('view engine', 'ejs');
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(cors());
+app.use(morgan('dev'));
+app.use(session({
+  secret: 'tyke-tech-luna-secret-2026',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 }
+}));
+
+// ─── VERİTABANI YÖNETİMİ (Vercel Fix) ───────────────────────
+const IS_VERCEL = process.env.VERCEL || process.env.NOW_REGION;
+const DB_PATH = IS_VERCEL ? path.join('/tmp', 'database.json') : path.join(__dirname, 'database.json');
+const uploadDir = IS_VERCEL ? path.join('/tmp', 'uploads') : path.join(__dirname, 'public', 'uploads');
+
+fse.ensureDirSync(uploadDir);
+
+function readDB() {
+  try {
+    if (!fs.existsSync(DB_PATH)) {
+      const initial = { users: [], conversations: [], uploadedFiles: [], stats: { totalMessages: 0 } };
+      fs.writeFileSync(DB_PATH, JSON.stringify(initial));
+      return initial;
+    }
+    return JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'));
+  } catch (err) {
+    console.error("DB Read Error:", err);
+    return { users: [], conversations: [], stats: { totalMessages: 0 } };
+  }
+}
+
+function writeDB(data) {
+  try {
+    fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
+  } catch (e) {
+    console.error("DB Write Error:", e);
+  }
+}
+
+const upload = multer({ dest: uploadDir });
+
+// ─── ROTALAR ────────────────────────────────────────────────
+const requireAuth = (req, res, next) => req.session.userId ? next() : res.redirect('/login');
+
+app.get('/', (req, res) => {
+  const db = readDB();
+  const user = db.users.find(u => u.id === req.session.userId);
+  res.render('index', { user: user || null });
+});
+
+app.get('/login', (req, res) => res.render('login', { error: null }));
+
+app.get('/chat', requireAuth, (req, res) => {
+  const db = readDB();
+  const user = db.users.find(u => u.id === req.session.userId);
+  const conversation = db.conversations.find(c => c.id === req.query.id);
+  res.render('chat', { 
+    sessionId: req.query.id || uuidv4(), 
+    user, 
+    conversation, 
+    allConversations: db.conversations 
+  });
+});
+
+// ─── ANA CHAT API ──────────────────────────────────────────
+app.post('/api/chat', requireAuth, upload.single('file'), async (req, res) => {
+  const { message, sessionId, history } = req.body;
+
+  try {
+    const model = genAI.getGenerativeModel({ 
+      model: GEMINI_MODEL, 
+      systemInstruction: LUNA_SYSTEM_PROMPT 
+    });
+    
+    let chatHistory = [];
+    if (history) {
+      try {
+        const parsedHistory = JSON.parse(history);
+        chatHistory = parsedHistory.slice(-10).map(msg => ({
+          role: msg.role === 'model' ? 'model' : 'user',
+          parts: [{ text: msg.parts[0].text }]
+        }));
+      } catch (e) {
+        console.error("History parse failed, starting clean.");
+      }
+    }
+
+    const chat = model.startChat({ history: chatHistory });
+    let promptParts = [];
+
+    if (req.file) {
+      const mimeType = req.file.mimetype;
+      if (mimeType.startsWith('image/')) {
+        promptParts.push({ 
+          inlineData: { 
+            data: fs.readFileSync(req.file.path).toString("base64"), 
+            mimeType 
+          } 
+        });
+      } else {
+        const text = fs.readFileSync(req.file.path, 'utf-8').substring(0, 10000);
+        promptParts.push({ text: `Dosya içeriği:\n${text}` });
+      }
+    }
+
+    promptParts.push({ text: message || "Analiz et." });
+    
+    const result = await chat.sendMessage(promptParts);
+    const responseText = result.response.text();
+
+    const db = readDB();
+    let sess = db.conversations.find(c => c.id === sessionId);
+    if (!sess) {
+      sess = { id: sessionId, messages: [], createdAt: new Date().toISOString() };
+      db.conversations.unshift(sess);
+    }
+    sess.messages.push({ role: 'user', content: message || '[Dosya]' }, { role: 'model', content: responseText });
+    db.stats.totalMessages = (db.stats.totalMessages || 0) + 1;
+    writeDB(db);
+
+    res.json({ success: true, response: responseText, sessionId });
+  } catch (err) {
+    console.error("CRITICAL API ERROR:", err);
+    res.status(500).json({ 
+      success: false, 
+      error: "Sunucu hatası: Mesaj gönderilemedi.",
+      details: err.message 
+    });
+  }
+});
+
+app.post('/api/auth/logout', (req, res) => req.session.destroy(() => res.redirect('/login')));
+
+if (require.main === module) {
+  app.listen(PORT, () => console.log(`LunaB1 Pro: ${PORT} portunda aktif.`));
+}
+module.exports = app;/**
+ * ============================================================
  *  LUNA AI — Server.js v3.5 (Tyke Tech Production Edition)
  *  Geliştirici: Batın Savaş | Tyke Tech
  *  Merkez: Yenimahalle, Ankara
